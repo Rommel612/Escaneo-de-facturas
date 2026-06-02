@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facturas — Panel de Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FBFBFA;
+      --surface: #FFFFFF;
+      --border: #EAEAEA;
+      --text-1: #111111;
+      --text-2: #787774;
+      --text-3: #B0ADA8;
+      --serif: 'Newsreader', 'Georgia', serif;
+      --sans: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --mono: 'Geist Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+      --c-alimentacion-bg: #FBF3DB; --c-alimentacion: #956400;
+      --c-transporte-bg:   #E1F3FE; --c-transporte:   #1F6C9F;
+      --c-oficina-bg:      #FDEBEC; --c-oficina:      #9F2F2D;
+      --c-servicios-bg:    #EDF3EC; --c-servicios:    #346538;
+      --c-tecnologia-bg:   #E8F0FD; --c-tecnologia:   #2351A3;
+      --c-salud-bg:        #EDF3EC; --c-salud:        #346538;
+      --c-otro-bg:         #F0F0EF; --c-otro:         #5A5A58;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text-1);
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ── */
+    .page { max-width: 1280px; margin: 0 auto; padding: 0 40px 80px; }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 32px 0 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .header-left { display: flex; align-items: baseline; gap: 18px; }
+    .logo {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 300;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .logo-sep {
+      display: inline-block;
+      width: 1px;
+      height: 14px;
+      background: var(--border);
+      margin: 0 4px;
+      vertical-align: middle;
+    }
+    .header-sub { font-size: 13px; color: var(--text-2); }
+
+    .header-right { display: flex; align-items: center; gap: 16px; }
+
+    .wa-status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .wa-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--text-3);
+      flex-shrink: 0;
+      transition: background 0.4s;
+    }
+    .wa-dot.on { background: #5B8A5B; animation: blink 2.4s ease-in-out infinite; }
+    .wa-dot.off { background: #C0564A; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-family: var(--sans); font-size: 13px; font-weight: 500;
+      padding: 9px 18px; border-radius: 5px;
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--text-1); cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+    .btn:hover { background: #F4F3F1; }
+    .btn:active { transform: scale(0.97); }
+    .btn-dark { background: #111; color: #fff; border-color: #111; }
+    .btn-dark:hover { background: #2A2A2A; }
+
+    /* ── Stats ── */
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; padding: 36px 0 0; }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px 36px;
+      opacity: 0;
+      transform: translateY(14px);
+      animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .stat-card:nth-child(1){animation-delay:0ms}
+    .stat-card:nth-child(2){animation-delay:75ms}
+    .stat-card:nth-child(3){animation-delay:150ms}
+    @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+    .stat-label {
+      font-size: 11px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.09em; color: var(--text-2); margin-bottom: 14px;
+    }
+    .stat-value {
+      font-family: var(--serif); font-size: 40px; font-weight: 300;
+      letter-spacing: -0.04em; line-height: 1; color: var(--text-1);
+    }
+    .stat-sub { font-family: var(--mono); font-size: 12px; color: var(--text-3); margin-top: 10px; }
+
+    /* ── Table section ── */
+    .section { padding: 44px 0 0; }
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-family: var(--serif); font-size: 22px; font-weight: 300;
+      letter-spacing: -0.025em;
+    }
+    .section-meta { font-family: var(--mono); font-size: 12px; color: var(--text-2); }
+
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+    thead th {
+      text-align: left; padding: 14px 22px;
+      font-size: 11px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--text-2);
+      border-bottom: 1px solid var(--border); background: #FAFAF8;
+      white-space: nowrap;
+    }
+    thead th.r { text-align: right; }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #FAFAF8; }
+
+    tbody td { padding: 17px 22px; vertical-align: middle; }
+
+    .td-name  { font-weight: 500; }
+    .td-folio { font-family: var(--mono); font-size: 12px; color: var(--text-2); }
+    .td-date  { font-family: var(--mono); font-size: 13px; color: var(--text-2); white-space: nowrap; }
+    .td-amt   { font-family: var(--mono); font-size: 14px; font-weight: 500; text-align: right; white-space: nowrap; }
+    .td-tax   { font-family: var(--mono); font-size: 12px; color: var(--text-2); text-align: right; }
+    .td-desc  {
+      font-size: 13px; color: var(--text-2);
+      max-width: 220px; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block; padding: 3px 11px;
+      border-radius: 9999px; font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
+    }
+    .b-alimentacion{background:var(--c-alimentacion-bg);color:var(--c-alimentacion)}
+    .b-transporte  {background:var(--c-transporte-bg);  color:var(--c-transporte)}
+    .b-oficina     {background:var(--c-oficina-bg);     color:var(--c-oficina)}
+    .b-servicios   {background:var(--c-servicios-bg);   color:var(--c-servicios)}
+    .b-tecnologia  {background:var(--c-tecnologia-bg);  color:var(--c-tecnologia)}
+    .b-salud       {background:var(--c-salud-bg);       color:var(--c-salud)}
+    .b-otro        {background:var(--c-otro-bg);        color:var(--c-otro)}
+
+    /* ── Animate new row ── */
+    @keyframes rowIn {
+      from { opacity:0; background:#EFF7EF; }
+      to   { opacity:1; background:transparent; }
+    }
+    .row-new { animation: rowIn 1.2s ease forwards; }
+
+    /* ── Empty state ── */
+    .empty {
+      text-align: center; padding: 88px 40px;
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+    }
+    .empty-icon { color: var(--text-3); }
+    .empty-title {
+      font-family: var(--serif); font-size: 22px; font-weight: 300;
+      letter-spacing: -0.02em; color: var(--text-1);
+    }
+    .empty-sub { font-size: 14px; color: var(--text-2); max-width: 340px; line-height: 1.55; }
+
+    /* ── Toasts ── */
+    #toasts {
+      position: fixed; bottom: 28px; right: 28px;
+      display: flex; flex-direction: column; gap: 10px; z-index: 900;
+    }
+    .toast {
+      background: #111; color: #fff;
+      padding: 14px 20px; border-radius: 8px;
+      font-size: 13px; max-width: 300px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      animation: toastIn 0.3s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    @keyframes toastIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
+    .toast-title  { font-weight: 600; margin-bottom: 2px; }
+    .toast-body   { font-size: 12px; opacity: 0.72; line-height: 1.4; }
+
+    /* ── Modal ── */
+    .overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.25); backdrop-filter: blur(4px);
+      z-index: 800; align-items: center; justify-content: center;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 44px;
+      max-width: 380px; width: 92%;
+      text-align: center; position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 16px; right: 20px;
+      background: none; border: none; cursor: pointer;
+      font-size: 22px; line-height: 1; color: var(--text-2);
+    }
+    .modal-title {
+      font-family: var(--serif); font-size: 24px; font-weight: 300;
+      letter-spacing: -0.03em; margin-bottom: 8px;
+    }
+    .modal-sub {
+      font-size: 13px; color: var(--text-2);
+      line-height: 1.55; margin-bottom: 28px;
+    }
+    .modal-qr {
+      width: 200px; height: 200px;
+      border: 1px solid var(--border); border-radius: 10px;
+      display: block; margin: 0 auto 16px;
+    }
+    .modal-phone {
+      font-family: var(--mono); font-size: 13px; color: var(--text-2);
+      margin-bottom: 22px;
+    }
+    .modal-no-phone {
+      font-size: 13px; color: var(--text-2); margin: 20px 0;
+      padding: 14px 18px; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 8px;
+    }
+    .modal-no-phone code {
+      font-family: var(--mono); font-size: 12px;
+      background: #EAEAEA; padding: 2px 6px; border-radius: 4px;
+    }
+
+    /* ── Thumbnail ── */
+    .td-thumb { width: 48px; padding: 10px 12px 10px 22px !important; }
+    .thumb-img {
+      width: 40px; height: 40px; object-fit: cover;
+      border-radius: 6px; border: 1px solid var(--border);
+      cursor: zoom-in; display: block;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .thumb-img:hover { opacity: 0.82; transform: scale(1.06); }
+    .thumb-pdf {
+      width: 40px; height: 40px; border-radius: 6px;
+      border: 1px solid var(--border); background: #FDEBEC;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .thumb-pdf:hover { opacity: 0.75; }
+    .thumb-none {
+      width: 40px; height: 40px; border-radius: 6px;
+      border: 1px dashed var(--border); background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Image lightbox ── */
+    #lightbox {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.72); backdrop-filter: blur(6px);
+      z-index: 1000; align-items: center; justify-content: center;
+      cursor: zoom-out;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img {
+      max-width: min(90vw, 900px); max-height: 90vh;
+      border-radius: 10px; box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+      cursor: default;
+    }
+    #lightboxClose {
+      position: fixed; top: 20px; right: 24px;
+      background: rgba(255,255,255,0.12); border: none; color: #fff;
+      font-size: 26px; line-height: 1; cursor: pointer;
+      border-radius: 6px; width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    #lightboxClose:hover { background: rgba(255,255,255,0.22); }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .page { padding: 0 20px 60px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .stat-card:nth-child(3) { grid-column: span 2; }
+      .td-desc, .td-folio { display: none; }
+    }
+    @media (max-width: 600px) {
+      .header { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .stats { grid-template-columns: 1fr; }
+      .stat-card { grid-column: auto !important; }
+      .td-tax { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">Facturas<span class="logo-sep"></span>Panel</div>
+      <span class="header-sub">Control de gastos en tiempo real</span>
+    </div>
+    <div class="header-right">
+      <div class="wa-status">
+        <div class="wa-dot" id="waDot"></div>
+        <span id="waLabel">WhatsApp</span>
+      </div>
+      <div class="wa-status" style="margin-left:4px">
+        <div class="wa-dot" id="sockDot"></div>
+        <span id="sockLabel">Panel</span>
+      </div>
+      <button class="btn" onclick="exportExcel()" id="btnExport">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Exportar Excel
+      </button>
+      <button class="btn btn-dark" onclick="openModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M3 3h7v7H3V3zm2 2v3h3V5H5zm7-2h7v7h-7V3zm2 2v3h3V5h-3zM3 13h7v7H3v-7zm2 2v3h3v-3H5zm13-2h2v2h-2v-2zm0 4h2v2h-2v-2zm-4-4h2v2h-2v-2zm0 4h2v2h-2v-2zm4 4h2v2h-2v-2zm-4 0h2v2h-2v-2z"/>
+        </svg>
+        Enviar factura
+      </button>
+    </div>
+  </header>
+
+  <!-- Pairing code banner (visible while WhatsApp is not linked) -->
+  <div id="authBanner" style="display:none; margin-top:28px; background:#fff; border:1px solid #EAEAEA; border-radius:12px; padding:36px; align-items:center; gap:40px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:220px;">
+      <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:#787774;margin-bottom:10px;">Vincular WhatsApp</div>
+      <div style="font-family:'Newsreader','Georgia',serif;font-size:22px;font-weight:300;letter-spacing:-.025em;margin-bottom:12px;">Conecta el bot en 3 pasos</div>
+      <ol style="font-size:13px;color:#787774;line-height:1.9;padding-left:18px;">
+        <li>Abre WhatsApp en tu teléfono</li>
+        <li>Ve a <strong style="color:#111">Dispositivos vinculados → Vincular dispositivo</strong></li>
+        <li>Toca <strong style="color:#111">"Vincular con número de teléfono"</strong> e ingresa el código</li>
+      </ol>
+    </div>
+    <div style="flex-shrink:0; text-align:center;">
+      <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:#787774;margin-bottom:12px;">Tu código</div>
+      <div id="pairingCode" style="font-family:'Geist Mono','SF Mono',monospace;font-size:40px;font-weight:500;letter-spacing:.12em;color:#111;background:#F7F6F3;border:1px solid #EAEAEA;border-radius:10px;padding:20px 32px;min-width:220px;display:inline-block;">—</div>
+      <div style="font-size:11px;color:#B0ADA8;margin-top:10px;">Válido por 60 segundos — se renueva automáticamente</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label">Total acumulado</div>
+      <div class="stat-value" id="sTotal">—</div>
+      <div class="stat-sub" id="sCurrency">USD</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Facturas registradas</div>
+      <div class="stat-value" id="sCount">0</div>
+      <div class="stat-sub" id="sCountSub">documentos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Promedio por factura</div>
+      <div class="stat-value" id="sAvg">—</div>
+      <div class="stat-sub">por documento</div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="section">
+    <div class="section-head">
+      <h2 class="section-title">Facturas recientes</h2>
+      <span class="section-meta" id="lastUpdate">—</span>
+    </div>
+    <div class="table-wrap" id="tableWrap"></div>
+  </div>
+
+</div>
+
+<!-- QR Modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()" aria-label="Cerrar">&times;</button>
+    <h3 class="modal-title">Enviar factura</h3>
+    <p class="modal-sub">Escanea el código QR con tu teléfono para abrir la conversación con el bot de WhatsApp.</p>
+    <img class="modal-qr" id="modalQr" src="" alt="WhatsApp QR" style="display:none">
+    <div class="modal-phone" id="modalPhone"></div>
+    <div id="modalNoPhone" class="modal-no-phone" style="display:none">
+      Configura <code>WHATSAPP_PHONE</code> en el archivo <code>.env</code> para generar este QR.
+    </div>
+    <a id="modalLink" href="#" target="_blank" rel="noopener" class="btn btn-dark" style="display:none;width:100%;justify-content:center;">
+      Abrir WhatsApp
+    </a>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightboxClose" onclick="closeLightbox()" aria-label="Cerrar">&times;</button>
+  <img id="lightboxImg" src="" alt="Factura" onclick="event.stopPropagation()">
+</div>
+
+<!-- Toasts -->
+<div id="toasts"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  /* ─── State ─── */
+  let expenses = []
+
+  /* ─── Socket ─── */
+  const socket = io()
+
+  socket.on('connect', () => setStatus('sock', true))
+  socket.on('disconnect', () => setStatus('sock', false))
+
+  socket.on('wa-status', (on) => {
+    setStatus('wa', on)
+    if (on) document.getElementById('authBanner').style.display = 'none'
+  })
+
+  socket.on('pairing-code', (code) => {
+    document.getElementById('pairingCode').textContent = code
+    document.getElementById('authBanner').style.display = 'flex'
+  })
+
+  socket.on('init', ({ expenses: list, stats }) => {
+    expenses = list
+    renderTable(expenses)
+    updateStats(stats)
+  })
+
+  socket.on('new-expense', ({ expense, stats }) => {
+    expenses.unshift(expense)
+    prependRow(expense)
+    updateStats(stats)
+    showToast(expense)
+    document.getElementById('lastUpdate').textContent = 'Actualizado: ' + fmtTime(new Date().toISOString())
+  })
+
+  /* ─── Status dots ─── */
+  function setStatus(which, on) {
+    const dot   = document.getElementById(which === 'wa' ? 'waDot' : 'sockDot')
+    const label = document.getElementById(which === 'wa' ? 'waLabel' : 'sockLabel')
+    dot.className = 'wa-dot ' + (on ? 'on' : 'off')
+    label.textContent = which === 'wa'
+      ? (on ? 'WhatsApp' : 'WhatsApp off')
+      : (on ? 'En vivo'  : 'Desconectado')
+  }
+
+  /* ─── Stats ─── */
+  function updateStats(s) {
+    document.getElementById('sTotal').textContent   = fmtAmt(s.total)
+    document.getElementById('sCount').textContent   = s.count
+    document.getElementById('sCountSub').textContent = s.count === 1 ? 'documento' : 'documentos'
+    document.getElementById('sAvg').textContent     = fmtAmt(s.average)
+    document.getElementById('lastUpdate').textContent = 'Última actualización: ' + fmtTime(s.lastUpdated)
+  }
+
+  /* ─── Table ─── */
+  function renderTable(list) {
+    const wrap = document.getElementById('tableWrap')
+    if (!list || list.length === 0) {
+      wrap.innerHTML = emptyHTML()
+      return
+    }
+    const table = document.createElement('table')
+    table.innerHTML = theadHTML()
+    const tbody = document.createElement('tbody')
+    tbody.id = 'expBody'
+    list.forEach(e => tbody.appendChild(buildRow(e)))
+    table.appendChild(tbody)
+    wrap.innerHTML = ''
+    wrap.appendChild(table)
+  }
+
+  function theadHTML() {
+    return `<thead><tr>
+      <th style="width:48px"></th>
+      <th>Proveedor</th>
+      <th>No. Factura</th>
+      <th>Fecha</th>
+      <th class="r">Total</th>
+      <th class="r">IVA</th>
+      <th>Categoría</th>
+      <th>Descripción</th>
+    </tr></thead>`
+  }
+
+  function thumbHTML(e) {
+    if (!e.imageFile) {
+      return `<td class="td-thumb"><div class="thumb-none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0BAB4" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+      </div></td>`
+    }
+    if (e.imageFile.endsWith('.pdf')) {
+      return `<td class="td-thumb"><a class="thumb-pdf" href="/uploads/${esc(e.imageFile)}" target="_blank" rel="noopener" title="Ver PDF">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9F2F2D" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+      </a></td>`
+    }
+    return `<td class="td-thumb"><img class="thumb-img" src="/uploads/${esc(e.imageFile)}" alt="Factura" loading="lazy" onclick="openLightbox(this.src)"></td>`
+  }
+
+  function buildRow(e) {
+    const cat = (e.categoria || 'otro').toLowerCase()
+    const cur = e.moneda || 'USD'
+    const tr  = document.createElement('tr')
+    tr.innerHTML = `
+      ${thumbHTML(e)}
+      <td class="td-name">${esc(e.proveedor || '—')}</td>
+      <td class="td-folio">${esc(e.numero_factura || '—')}</td>
+      <td class="td-date">${e.fecha || '—'}</td>
+      <td class="td-amt">${esc(cur)} ${fmtAmt(e.total)}</td>
+      <td class="td-tax">${fmtAmt(e.iva)}</td>
+      <td><span class="badge b-${cat}">${cap(cat)}</span></td>
+      <td class="td-desc" title="${esc(e.descripcion || '')}">${esc(e.descripcion || '—')}</td>
+    `
+    return tr
+  }
+
+  function prependRow(expense) {
+    let body = document.getElementById('expBody')
+    if (!body) {
+      renderTable(expenses)
+      body = document.getElementById('expBody')
+      if (body && body.firstElementChild) body.firstElementChild.classList.add('row-new')
+      return
+    }
+    const tr = buildRow(expense)
+    tr.classList.add('row-new')
+    body.prepend(tr)
+  }
+
+  function emptyHTML() {
+    return `<div class="empty">
+      <div class="empty-icon">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <polyline points="14,2 14,8 20,8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10,9 9,9 8,9"/>
+        </svg>
+      </div>
+      <div class="empty-title">Sin facturas aún</div>
+      <div class="empty-sub">Envía una foto o PDF de cualquier factura al bot de WhatsApp para comenzar. Los datos aparecerán aquí de forma instantánea.</div>
+    </div>`
+  }
+
+  /* ─── Toast ─── */
+  function showToast(e) {
+    const cur = e.moneda || 'USD'
+    const d   = document.createElement('div')
+    d.className = 'toast'
+    d.innerHTML = `
+      <div class="toast-title">Factura recibida</div>
+      <div class="toast-body">${esc(e.proveedor || 'Sin nombre')} &mdash; ${esc(cur)} ${fmtAmt(e.total)}</div>
+    `
+    document.getElementById('toasts').appendChild(d)
+    setTimeout(() => d.remove(), 5500)
+  }
+
+  /* ─── QR Modal ─── */
+  async function openModal() {
+    document.getElementById('overlay').classList.add('open')
+    try {
+      const r    = await fetch('/api/whatsapp-qr')
+      const data = await r.json()
+      if (data.qr) {
+        const img = document.getElementById('modalQr')
+        img.src = data.qr
+        img.style.display = 'block'
+        document.getElementById('modalPhone').textContent = '+' + data.phone
+        const link = document.getElementById('modalLink')
+        link.href  = data.url
+        link.style.display = 'flex'
+        document.getElementById('modalNoPhone').style.display = 'none'
+      } else {
+        document.getElementById('modalQr').style.display   = 'none'
+        document.getElementById('modalLink').style.display = 'none'
+        document.getElementById('modalNoPhone').style.display = 'block'
+      }
+    } catch {
+      document.getElementById('modalNoPhone').style.display = 'block'
+    }
+  }
+
+  function closeModal() { document.getElementById('overlay').classList.remove('open') }
+  document.getElementById('overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal() })
+
+  /* ─── Export ─── */
+  async function exportExcel() {
+    const btn = document.getElementById('btnExport')
+    btn.disabled = true
+    btn.textContent = 'Generando...'
+    try {
+      const a = document.createElement('a')
+      a.href = '/api/export'
+      a.download = ''
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+    } finally {
+      setTimeout(() => {
+        btn.disabled = false
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Exportar Excel`
+      }, 1500)
+    }
+  }
+
+  /* ─── Lightbox ─── */
+  function openLightbox(src) {
+    document.getElementById('lightboxImg').src = src
+    document.getElementById('lightbox').classList.add('open')
+  }
+  function closeLightbox() { document.getElementById('lightbox').classList.remove('open') }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(); closeLightbox() }
+  })
+
+  /* ─── Helpers ─── */
+  function fmtAmt(n) {
+    return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n) || 0)
+  }
+  function fmtTime(iso) {
+    if (!iso) return '—'
+    return new Date(iso).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
+  }
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+  }
+  function cap(s) { return String(s).charAt(0).toUpperCase() + String(s).slice(1) }
+</script>
+</body>
+</html>

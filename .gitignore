@@ -1,0 +1,53 @@
+# ── Dependencias ────────────────────────────────────────────────────────────
+node_modules/
+
+# ── Variables de entorno y credenciales ─────────────────────────────────────
+.env
+.env.*
+!.env.example
+env/
+
+# ── Sesión de WhatsApp (Baileys) ─────────────────────────────────────────────
+auth_info_baileys/
+
+# ── Datos de usuario ─────────────────────────────────────────────────────────
+data.json
+
+# ── Imágenes de facturas subidas ─────────────────────────────────────────────
+public/uploads/*
+!public/uploads/.gitkeep
+
+# ── Certificados y claves criptográficas ────────────────────────────────────
+*.pem
+*.p12
+*.key
+*.cert
+*.crt
+*.pfx
+certificados/
+certs/
+
+# ── Archivos de build ────────────────────────────────────────────────────────
+dist/
+build/
+.next/
+out/
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/
+npm-debug.log*
+
+# ── Sistema operativo ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editores e IDEs ──────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Claude Code ──────────────────────────────────────────────────────────────
+.claude/
