@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import { GEMINI_API_KEY } from '../config.js'
 
 const PROMPT = `Eres un asistente contable. Analiza este documento (imagen o PDF de factura, recibo o comprobante de pago) y extrae los datos en formato JSON con exactamente estas claves:
 
@@ -23,7 +24,7 @@ let model = null
 
 function getModel() {
   if (!model) {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY)
     model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
   }
   return model
@@ -64,7 +65,7 @@ export async function extractInvoiceData(mediaBuffer, mimeType, retries = 3) {
       }
 
       if (is429 && attempt < retries) {
-        const wait = attempt * 15000 // 15s, 30s
+        const wait = attempt * 15000
         console.log(`Gemini rate limit — reintentando en ${wait / 1000}s (intento ${attempt}/${retries})`)
         await new Promise(r => setTimeout(r, wait))
         continue

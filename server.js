@@ -1,74 +1,51 @@
-import 'dotenv/config'
 import express from 'express'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
-import qrcode from 'qrcode'
-import xlsx from 'xlsx'
-import { connectToWhatsApp } from './whatsapp.js'
-import { getExpenses, getStats } from './db.js'
+import { readdirSync, statSync, unlinkSync } from 'fs'
+import { PORT } from './src/config.js'
+import { getExpenses, getStats, getStatsFrom } from './src/services/storage.js'
+import { registerRoutes } from './src/routes/api.js'
+import { connectToWhatsApp, waEvents } from './src/services/whatsapp.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const app = express()
 const httpServer = createServer(app)
-const io = new Server(httpServer, { cors: { origin: '*' } })
+
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || 'http://localhost:3000'
+const io = new Server(httpServer, { cors: { origin: ALLOWED_ORIGIN } })
 
 app.use(express.json())
 app.use(express.static(join(__dirname, 'public')))
 
-app.get('/api/expenses', (_req, res) => {
-  res.json(getExpenses())
-})
+registerRoutes(app, io)
 
-app.get('/api/stats', (_req, res) => {
-  res.json(getStats())
-})
+const UPLOADS_DIR = join(__dirname, 'public', 'uploads')
+const MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000 // 90 días
 
-app.get('/api/export', (_req, res) => {
-  const expenses = getExpenses()
+function cleanOldUploads() {
+  try {
+    const now = Date.now()
+    const files = readdirSync(UPLOADS_DIR)
+    let deleted = 0
+    for (const file of files) {
+      if (file === '.gitkeep') continue
+      const filepath = join(UPLOADS_DIR, file)
+      const { mtimeMs } = statSync(filepath)
+      if (now - mtimeMs > MAX_AGE_MS) {
+        unlinkSync(filepath)
+        deleted++
+      }
+    }
+    if (deleted > 0) console.log(`[cleanup] ${deleted} archivo(s) de uploads eliminados`)
+  } catch (err) {
+    console.error('[cleanup] Error limpiando uploads:', err.message)
+  }
+}
 
-  const rows = expenses.map(e => ({
-    'Proveedor':      e.proveedor     || '',
-    'No. Factura':    e.numero_factura || '',
-    'Fecha':          e.fecha         || '',
-    'Total':          Number(e.total) || 0,
-    'Subtotal':       Number(e.subtotal) || 0,
-    'IVA':            Number(e.iva)   || 0,
-    'Moneda':         e.moneda        || 'USD',
-    'Categoría':      e.categoria     || '',
-    'Descripción':    e.descripcion   || '',
-    'Imagen':         e.imageFile ? `uploads/${e.imageFile}` : '',
-    'Registrado':     e.createdAt     || '',
-  }))
-
-  const wb = xlsx.utils.book_new()
-  const ws = xlsx.utils.json_to_sheet(rows)
-
-  // Column widths
-  ws['!cols'] = [
-    { wch: 28 }, { wch: 18 }, { wch: 12 }, { wch: 12 },
-    { wch: 12 }, { wch: 10 }, { wch: 8  }, { wch: 16 },
-    { wch: 40 }, { wch: 30 }, { wch: 22 },
-  ]
-
-  xlsx.utils.book_append_sheet(wb, ws, 'Facturas')
-
-  const buf = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' })
-  const filename = `facturas_${new Date().toISOString().slice(0,10)}.xlsx`
-
-  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`)
-  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-  res.send(buf)
-})
-
-app.get('/api/whatsapp-qr', async (_req, res) => {
-  const phone = process.env.WHATSAPP_PHONE
-  if (!phone) return res.json({ qr: null, url: null })
-  const url = `https://wa.me/${phone}`
-  const qr = await qrcode.toDataURL(url, { width: 256, margin: 2 })
-  res.json({ qr, url, phone })
-})
+cleanOldUploads()
+setInterval(cleanOldUploads, 24 * 60 * 60 * 1000)
 
 let latestPairingCode = null
 
@@ -77,26 +54,25 @@ io.on('connection', (socket) => {
   if (latestPairingCode) socket.emit('pairing-code', latestPairingCode)
 })
 
-function broadcastExpense(expense) {
-  io.emit('new-expense', { expense, stats: getStats() })
-}
+waEvents.on('expense', (expense) => {
+  const expenses = getExpenses()
+  io.emit('new-expense', { expense, stats: getStatsFrom(expenses) })
+})
 
-function broadcastWaStatus(connected) {
+waEvents.on('status', (connected) => {
   if (connected) latestPairingCode = null
   io.emit('wa-status', connected)
-}
+})
 
-function broadcastPairingCode(code) {
+waEvents.on('pairing-code', (code) => {
   latestPairingCode = code
   io.emit('pairing-code', code)
-}
-
-const PORT = process.env.PORT || 3000
+})
 
 httpServer.listen(PORT, async () => {
   console.log(`\nPanel web → http://localhost:${PORT}\n`)
   try {
-    await connectToWhatsApp(broadcastExpense, broadcastWaStatus, broadcastPairingCode)
+    await connectToWhatsApp()
   } catch (err) {
     console.error('Error iniciando WhatsApp:', err.message)
   }

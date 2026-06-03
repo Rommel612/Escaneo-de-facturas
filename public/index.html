@@ -159,7 +159,7 @@
       font-size: 11px; font-weight: 500; text-transform: uppercase;
       letter-spacing: 0.07em; color: var(--text-2);
       border-bottom: 1px solid var(--border); background: #FAFAF8;
-      white-space: nowrap;
+      white-space: nowrap; vertical-align: middle;
     }
     thead th.r { text-align: right; }
 
@@ -172,15 +172,33 @@
 
     tbody td { padding: 17px 22px; vertical-align: middle; }
 
-    .td-name  { font-weight: 500; }
+    .td-name  { font-weight: 500; min-width: 140px; max-width: 180px; word-break: break-word; }
     .td-folio { font-family: var(--mono); font-size: 12px; color: var(--text-2); }
     .td-date  { font-family: var(--mono); font-size: 13px; color: var(--text-2); white-space: nowrap; }
     .td-amt   { font-family: var(--mono); font-size: 14px; font-weight: 500; text-align: right; white-space: nowrap; }
     .td-tax   { font-family: var(--mono); font-size: 12px; color: var(--text-2); text-align: right; }
-    .td-desc  {
-      font-size: 13px; color: var(--text-2);
-      max-width: 220px; white-space: nowrap;
-      overflow: hidden; text-overflow: ellipsis;
+    .td-desc {
+      max-width: 320px;
+      min-width: 200px;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .td-desc.expanded {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+      max-width: 320px;
+      word-break: break-word;
+      cursor: pointer;
+    }
+    .td-desc:hover {
+      color: #111111;
+      opacity: 0.75;
     }
 
     /* ── Badges ── */
@@ -196,6 +214,20 @@
     .b-tecnologia  {background:var(--c-tecnologia-bg);  color:var(--c-tecnologia)}
     .b-salud       {background:var(--c-salud-bg);       color:var(--c-salud)}
     .b-otro        {background:var(--c-otro-bg);        color:var(--c-otro)}
+
+    /* ── Delete / Download buttons ── */
+    .btn-del, .btn-dl {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 6px;
+      border: none; background: transparent; cursor: pointer;
+      color: var(--text-3); opacity: 0;
+      transition: opacity 0.15s, background 0.15s, color 0.15s;
+      padding: 0; text-decoration: none;
+    }
+    tbody tr:hover .btn-del,
+    tbody tr:hover .btn-dl { opacity: 1; }
+    .btn-del:hover { background: #FEE2E2; color: #B91C1C; }
+    .btn-dl:hover  { background: #E1F3FE; color: #1F6C9F; }
 
     /* ── Animate new row ── */
     @keyframes rowIn {
@@ -324,6 +356,47 @@
     }
     #lightboxClose:hover { background: rgba(255,255,255,0.22); }
 
+    /* ── Date filter bar ── */
+    .filter-bar {
+      display: flex;
+      align-items: flex-end;
+      gap: 14px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .filter-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-2);
+    }
+    .filter-input {
+      font-family: var(--mono);
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-1);
+      cursor: pointer;
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    .filter-input:focus { border-color: #999; }
+    .filter-count {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-2);
+      align-self: flex-end;
+      padding-bottom: 9px;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 900px) {
       .page { padding: 0 20px 60px; }
@@ -418,6 +491,18 @@
       <h2 class="section-title">Facturas recientes</h2>
       <span class="section-meta" id="lastUpdate">—</span>
     </div>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label class="filter-label" for="filterFrom">Desde</label>
+        <input class="filter-input" type="date" id="filterFrom" onchange="applyFilter()">
+      </div>
+      <div class="filter-group">
+        <label class="filter-label" for="filterTo">Hasta</label>
+        <input class="filter-input" type="date" id="filterTo" onchange="applyFilter()">
+      </div>
+      <button class="btn" id="filterClear" onclick="clearFilter()" style="display:none">Limpiar filtro</button>
+      <span class="filter-count" id="filterCount" style="display:none"></span>
+    </div>
     <div class="table-wrap" id="tableWrap"></div>
   </div>
 
@@ -478,10 +563,34 @@
 
   socket.on('new-expense', ({ expense, stats }) => {
     expenses.unshift(expense)
-    prependRow(expense)
+    if (isFilterActive()) {
+      applyFilter()
+    } else {
+      prependRow(expense)
+    }
     updateStats(stats)
     showToast(expense)
     document.getElementById('lastUpdate').textContent = 'Actualizado: ' + fmtTime(new Date().toISOString())
+  })
+
+  socket.on('delete-expense', ({ id, stats }) => {
+    expenses = expenses.filter(e => e.id !== id)
+    if (isFilterActive()) {
+      applyFilter()
+    } else {
+      removeRow(id)
+    }
+    updateStats(stats)
+  })
+
+  socket.on('update-expense', ({ id, descripcion }) => {
+    const e = expenses.find(e => e.id === id)
+    if (e) e.descripcion = descripcion
+    const td = document.querySelector(`tr[data-id="${id}"] .td-desc`)
+    if (td && !td.querySelector('input')) {
+      td.textContent = descripcion || '—'
+      td.title = descripcion || ''
+    }
   })
 
   /* ─── Status dots ─── */
@@ -529,7 +638,8 @@
       <th class="r">Total</th>
       <th class="r">IVA</th>
       <th>Categoría</th>
-      <th>Descripción</th>
+      <th style="text-align:left">Descripción</th>
+      <th style="width:72px"></th>
     </tr></thead>`
   }
 
@@ -551,6 +661,7 @@
     const cat = (e.categoria || 'otro').toLowerCase()
     const cur = e.moneda || 'USD'
     const tr  = document.createElement('tr')
+    tr.dataset.id = e.id
     tr.innerHTML = `
       ${thumbHTML(e)}
       <td class="td-name">${esc(e.proveedor || '—')}</td>
@@ -559,7 +670,24 @@
       <td class="td-amt">${esc(cur)} ${fmtAmt(e.total)}</td>
       <td class="td-tax">${fmtAmt(e.iva)}</td>
       <td><span class="badge b-${cat}">${cap(cat)}</span></td>
-      <td class="td-desc" title="${esc(e.descripcion || '')}">${esc(e.descripcion || '—')}</td>
+      <td
+        class="td-desc"
+        onclick="toggleDesc(this)"
+        data-full="${(e.descripcion || '—').replace(/"/g, '&quot;')}"
+        title="${(e.descripcion || '—').replace(/"/g, '&quot;')}"
+      >${e.descripcion || '—'}</td>
+      <td style="text-align:center; vertical-align:middle; padding:0 12px; white-space:nowrap;">
+        ${e.imageFile && e.imageFile.endsWith('.pdf') ? `<a class="btn-dl" href="/uploads/${esc(e.imageFile)}" download="${esc(e.imageFile)}" title="Descargar PDF">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </a>` : ''}
+        <button class="btn-del" onclick="deleteExpense('${esc(e.id)}')" title="Eliminar factura">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14a2,2,0,0,1-2,2H8a2,2,0,0,1-2-2L5,6"/><path d="M10,11v6"/><path d="M14,11v6"/><path d="M9,6V4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1v2"/>
+          </svg>
+        </button>
+      </td>
     `
     return tr
   }
@@ -575,6 +703,80 @@
     const tr = buildRow(expense)
     tr.classList.add('row-new')
     body.prepend(tr)
+  }
+
+  /* ─── Toggle description expand ─── */
+  function toggleDesc(el) {
+    el.classList.toggle('expanded')
+    el.title = el.classList.contains('expanded') ? '' : el.dataset.full
+  }
+
+  /* ─── Edit description ─── */
+  function editDesc(td, id) {
+    if (td.querySelector('input')) return
+    const prev = td.textContent.trim() === '—' ? '' : td.textContent.trim()
+    td.textContent = ''
+    const input = document.createElement('input')
+    input.className = 'desc-input'
+    input.value = prev
+    input.maxLength = 120
+    td.appendChild(input)
+    input.focus()
+    input.select()
+
+    let saved = false
+    async function save() {
+      if (saved) return
+      saved = true
+      const val = input.value.trim()
+      if (val === prev) { td.textContent = prev || '—'; td.title = prev; return }
+      td.textContent = val || '—'
+      td.title = val
+      try {
+        await fetch(`/api/expenses/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ descripcion: val })
+        })
+        const e = expenses.find(e => e.id === id)
+        if (e) e.descripcion = val
+      } catch {
+        td.textContent = prev || '—'
+        td.title = prev
+      }
+    }
+
+    input.addEventListener('blur', save)
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { input.blur() }
+      if (e.key === 'Escape') { saved = true; td.textContent = prev || '—'; td.title = prev }
+    })
+  }
+
+  /* ─── Delete expense ─── */
+  async function deleteExpense(id) {
+    if (!confirm('¿Eliminar esta factura? Esta acción no se puede deshacer.')) return
+    try {
+      const r = await fetch(`/api/expenses/${id}`, { method: 'DELETE' })
+      if (!r.ok) throw new Error()
+      removeRow(id)
+    } catch {
+      alert('No se pudo eliminar la factura.')
+    }
+  }
+
+  function removeRow(id) {
+    const tr = document.querySelector(`tr[data-id="${id}"]`)
+    if (tr) {
+      tr.style.transition = 'opacity 0.25s'
+      tr.style.opacity = '0'
+      setTimeout(() => {
+        tr.remove()
+        if (!document.getElementById('expBody')?.querySelector('tr')) {
+          document.getElementById('tableWrap').innerHTML = emptyHTML()
+        }
+      }, 250)
+    }
   }
 
   function emptyHTML() {
@@ -663,6 +865,42 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { closeModal(); closeLightbox() }
   })
+
+  /* ─── Date filter ─── */
+  function isFilterActive() {
+    return !!(document.getElementById('filterFrom').value || document.getElementById('filterTo').value)
+  }
+
+  function applyFilter() {
+    const from = document.getElementById('filterFrom').value
+    const to   = document.getElementById('filterTo').value
+    const active = from || to
+
+    document.getElementById('filterClear').style.display = active ? 'inline-flex' : 'none'
+
+    const filtered = expenses.filter(e => {
+      const d = e.fecha || ''
+      if (from && d < from) return false
+      if (to   && d > to)   return false
+      return true
+    })
+
+    const countEl = document.getElementById('filterCount')
+    if (active) {
+      countEl.textContent = filtered.length + ' de ' + expenses.length + ' facturas'
+      countEl.style.display = 'inline'
+    } else {
+      countEl.style.display = 'none'
+    }
+
+    renderTable(filtered)
+  }
+
+  function clearFilter() {
+    document.getElementById('filterFrom').value = ''
+    document.getElementById('filterTo').value   = ''
+    applyFilter()
+  }
 
   /* ─── Helpers ─── */
   function fmtAmt(n) {
