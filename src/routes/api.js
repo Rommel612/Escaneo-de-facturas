@@ -1,7 +1,26 @@
 import qrcode from 'qrcode'
 import xlsx from 'xlsx'
+import { readFileSync, writeFileSync, existsSync } from 'fs'
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
 import { getExpenses, getStats, deleteExpense, updateExpense } from '../services/storage.js'
 import { WHATSAPP_PHONE } from '../config.js'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const CATEGORIES_PATH = join(__dirname, '..', '..', 'categories.json')
+const DEFAULT_CATEGORIES = ['IESS', 'Sueldos', 'Adelantos', 'Otro']
+
+function loadCategories() {
+  if (!existsSync(CATEGORIES_PATH)) {
+    writeFileSync(CATEGORIES_PATH, JSON.stringify(DEFAULT_CATEGORIES, null, 2))
+    return [...DEFAULT_CATEGORIES]
+  }
+  return JSON.parse(readFileSync(CATEGORIES_PATH, 'utf8'))
+}
+
+function saveCategories(cats) {
+  writeFileSync(CATEGORIES_PATH, JSON.stringify(cats, null, 2))
+}
 
 export function registerRoutes(app, io) {
   app.get('/api/expenses', (_req, res) => {
@@ -49,8 +68,8 @@ export function registerRoutes(app, io) {
   })
 
   app.patch('/api/expenses/:id', async (req, res) => {
-    const { proveedor, descripcion, categoria } = req.body
-    const updated = await updateExpense(req.params.id, { proveedor, descripcion, categoria })
+    const { proveedor, descripcion, categoria, banco } = req.body
+    const updated = await updateExpense(req.params.id, { proveedor, descripcion, categoria, banco })
     if (!updated) return res.status(404).json({ error: 'Not found' })
     io.emit('expense-updated', { expense: updated, stats: getStats() })
     res.json(updated)
@@ -61,6 +80,23 @@ export function registerRoutes(app, io) {
     if (!deleted) return res.status(404).json({ error: 'Not found' })
     io.emit('delete-expense', { id: req.params.id, stats: getStats() })
     res.json({ ok: true })
+  })
+
+  app.get('/api/categories', (_req, res) => {
+    res.json(loadCategories())
+  })
+
+  app.post('/api/categories', (req, res) => {
+    const raw = req.body?.name
+    if (!raw || typeof raw !== 'string') return res.status(400).json({ error: 'name requerido' })
+    const name = raw.trim().replace(/^./, c => c.toUpperCase())
+    const cats = loadCategories()
+    if (cats.some(c => c.toLowerCase() === name.toLowerCase())) {
+      return res.status(400).json({ error: 'Ya existe' })
+    }
+    cats.push(name)
+    saveCategories(cats)
+    res.json(cats)
   })
 
   app.get('/api/whatsapp-qr', async (_req, res) => {

@@ -1,24 +1,28 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { GEMINI_API_KEY } from '../config.js'
 
-const PROMPT = `Eres un asistente contable. Analiza este documento (imagen o PDF de factura, recibo o comprobante de pago) y extrae los datos en formato JSON con exactamente estas claves:
+const PROMPT = `Analiza este documento. Puede ser una factura comercial o un comprobante de transferencia bancaria.
+
+Extrae los siguientes campos y devuelve ÚNICAMENTE un objeto JSON válido, sin texto adicional, sin markdown, sin bloques de código:
 
 {
-  "proveedor": "nombre del proveedor o emisor",
-  "fecha": "fecha de emisión en formato YYYY-MM-DD",
-  "total": <número con el monto total a pagar>,
-  "subtotal": <número del subtotal antes de impuestos, igual al total si no hay desglose>,
-  "iva": <número del monto de impuestos (IVA, tax, GST, etc.), 0 si no aplica>,
-  "moneda": "código de moneda ISO (USD, MXN, EUR, etc.)",
-  "numero_factura": "número, folio o referencia del documento",
-  "categoria": "una de: alimentacion | transporte | oficina | servicios | tecnologia | salud | otro",
-  "descripcion": "descripción breve de los conceptos o servicios (máx 80 caracteres)"
+  "proveedor": "Si es factura: nombre del proveedor. Si es comprobante de transferencia: solo el PRIMER NOMBRE y PRIMER APELLIDO del beneficiario que aparece después de 'Para:'. Nunca extraer el campo 'De:'",
+  "numero_factura": "Si es factura: número de factura. Si es comprobante: número de comprobante",
+  "fecha": "Fecha del documento en formato YYYY-MM-DD",
+  "total": "Monto total como número decimal sin símbolos de moneda",
+  "subtotal": "Subtotal antes de impuestos si existe, sino igual al total",
+  "iva": "Monto de IVA como número decimal, 0 si no existe",
+  "moneda": "Código de moneda: USD, EUR, etc.",
+  "banco": "Nombre del banco si es visible en el documento (Pichincha, Produbanco, BGR u otro nombre que aparezca). null si no es visible",
+  "categoria": "Infiere la categoría más apropiada entre estas opciones únicamente: IESS, Sueldos, Adelantos, Otro",
+  "descripcion": "Si es factura: descripción breve del concepto. Si es comprobante: tipo de transferencia (ej: Transferencia Local, Transferencia Internacional). No incluir datos del remitente ni del destinatario"
 }
 
-Reglas:
-- Usa null para strings no encontrados, 0 para números no encontrados.
-- La categoría debe ser la más apropiada según el giro del proveedor.
-- Devuelve ÚNICAMENTE el JSON, sin texto adicional ni bloques de código markdown.`
+Reglas estrictas:
+- En comprobantes de transferencia: el campo 'proveedor' es SOLO el primer nombre y primer apellido del beneficiario (campo 'Para:'). Ignorar completamente el campo 'De:'
+- Nunca devolver null en campos de texto, usar string vacío "" si no se encuentra el dato
+- El campo 'total' y 'iva' siempre deben ser números, nunca strings
+- No incluir explicaciones, solo el JSON`
 
 let model = null
 

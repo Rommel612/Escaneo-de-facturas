@@ -33,7 +33,7 @@ export function addExpense(expense) {
 let writeQueue = Promise.resolve()
 
 export function updateExpense(id, fields) {
-  const ALLOWED = ['proveedor', 'descripcion', 'categoria']
+  const ALLOWED = ['proveedor', 'descripcion', 'categoria', 'banco']
 
   writeQueue = writeQueue.then(() => {
     const data = load()

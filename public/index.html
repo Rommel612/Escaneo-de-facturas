@@ -37,7 +37,7 @@
       --sans:  'Helvetica Neue', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
       --mono:  'Geist Mono', 'SF Mono', 'Fira Code', monospace;
 
-      /* ── Badges de categoría (sin cambios) ── */
+      /* ── Badges de categoría ── */
       --c-alimentacion-bg: #FBF3DB; --c-alimentacion: #956400;
       --c-transporte-bg:   #E1F3FE; --c-transporte:   #1F6C9F;
       --c-oficina-bg:      #FDEBEC; --c-oficina:      #9F2F2D;
@@ -45,6 +45,9 @@
       --c-tecnologia-bg:   #E8F0FD; --c-tecnologia:   #2351A3;
       --c-salud-bg:        #EDF3EC; --c-salud:        #346538;
       --c-otro-bg:         #F0F0EF; --c-otro:         #5A5A58;
+      --c-iess-bg:         #E8F4FD; --c-iess:         #1565C0;
+      --c-sueldos-bg:      #E8F8E8; --c-sueldos:      #2E7D32;
+      --c-adelantos-bg:    #FFF3E0; --c-adelantos:    #E65100;
     }
 
     html { font-size: 16px; scroll-behavior: smooth; }
@@ -152,7 +155,7 @@
     .btn {
       display: inline-flex; align-items: center; gap: 7px;
       font-family: var(--sans); font-size: 13px; font-weight: 500;
-      padding: 8px 16px; border-radius: 6px;
+      padding: 9px 16px; border-radius: 6px;
       border: 1px solid var(--gold-border);
       background: var(--gold-muted);
       color: var(--gold-light);
@@ -161,6 +164,7 @@
       transition: background 0.15s, border-color 0.15s, transform 0.1s;
       white-space: nowrap;
       letter-spacing: 0.01em;
+      min-height: 40px;
     }
     .btn:hover {
       background: rgba(201,168,76,0.22);
@@ -279,7 +283,7 @@
       overflow: hidden;
     }
 
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed; }
 
     thead th {
       text-align: left;
@@ -290,6 +294,9 @@
       border-bottom: 1px solid var(--border);
       background: var(--bg);
       white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 2;
     }
     thead th.r { text-align: right; }
 
@@ -302,7 +309,7 @@
 
     tbody td { padding: 16px 22px; vertical-align: middle; }
 
-    .td-name  { font-weight: 500; color: var(--navy); }
+    .td-name  { font-weight: 500; color: var(--navy); max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .td-folio { font-family: var(--mono); font-size: 12px; color: var(--text-2); }
     .td-date  { font-family: var(--mono); font-size: 13px; color: var(--text-2); white-space: nowrap; }
     .td-amt   {
@@ -311,15 +318,16 @@
       color: var(--navy);
     }
     .td-tax   { font-family: var(--mono); font-size: 12px; color: var(--text-2); text-align: right; }
-    .td-del   { width: 48px; text-align: center; padding: 0 16px !important; }
+    .td-del   { width: 40px; min-width: 40px; text-align: center; padding: 0 4px !important; }
     .btn-delete {
-      width: 30px; height: 30px;
+      width: 36px; height: 36px;
       border-radius: 6px;
       border: 1px solid transparent;
       background: transparent;
       color: var(--text-3);
       display: inline-flex; align-items: center; justify-content: center;
       cursor: pointer;
+      touch-action: manipulation;
       transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
     }
     .btn-delete:hover {
@@ -329,30 +337,60 @@
     }
     .btn-delete:active { transform: scale(0.93); }
     .btn-delete:disabled { opacity: 0.4; cursor: not-allowed; }
+    /* ── Descripción ── */
     .td-desc {
       font-size: 13px; color: var(--text-2);
-      max-width: 220px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
       cursor: pointer;
-      transition: all 0.2s ease;
       user-select: none;
+      vertical-align: middle;
+      transition: color 0.15s, background 0.15s;
     }
+    .td-desc:hover { color: var(--text-1); }
 
-    .td-desc.expanded {
-      white-space: normal;
-      overflow: visible;
-      text-overflow: unset;
-      max-width: 220px;
+    /* Span interno que controla el clamp */
+    .td-desc-text {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
       word-break: break-word;
-      cursor: pointer;
+      overflow-wrap: break-word;
     }
 
-    .td-desc:hover {
-      color: #111111;
-      opacity: 0.75;
+    /* Estado expanded: hasta 5 líneas */
+    .td-desc--expanded {
+      vertical-align: top;
+      cursor: pointer;
+      user-select: text;
     }
+    .td-desc--expanded .td-desc-text {
+      -webkit-line-clamp: 5;
+    }
+
+    /* Estado editing: alberga el textarea inline */
+    .td-desc--editing {
+      cursor: default;
+      vertical-align: top;
+    }
+
+    /* Textarea inline — sin scroll, sin flotante */
+    .desc-textarea {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1.5px solid var(--navy);
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 13px;
+      font-family: var(--sans);
+      color: var(--text-1);
+      background: #F0F7FF;
+      resize: none;
+      overflow: hidden;
+      line-height: 1.5;
+      box-shadow: 0 0 0 3px var(--border-soft);
+    }
+    .desc-textarea:focus { outline: none; }
 
     /* ── Badges ── */
     .badge {
@@ -367,6 +405,24 @@
     .b-tecnologia   { background: var(--c-tecnologia-bg);   color: var(--c-tecnologia);   }
     .b-salud        { background: var(--c-salud-bg);        color: var(--c-salud);        }
     .b-otro         { background: var(--c-otro-bg);         color: var(--c-otro);         }
+    .b-iess         { background: var(--c-iess-bg);         color: var(--c-iess);         }
+    .b-sueldos      { background: var(--c-sueldos-bg);      color: var(--c-sueldos);      }
+    .b-adelantos    { background: var(--c-adelantos-bg);    color: var(--c-adelantos);    }
+
+    /* ── Select de banco ── */
+    .bank-select {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 12px;
+      padding: 3px 6px;
+      background: var(--surface);
+      color: var(--text-2);
+      cursor: pointer;
+      font-family: var(--mono);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .bank-select:hover { border-color: var(--navy); background: var(--bg); }
+    .bank-select:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 2px var(--border-soft); }
 
     /* ── Nueva fila ── */
     @keyframes rowIn {
@@ -541,7 +597,7 @@
     .filter-btn {
       display: inline-flex; align-items: center;
       font-family: var(--sans); font-size: 13px; font-weight: 500;
-      padding: 8px 16px; border-radius: 6px;
+      padding: 9px 16px; border-radius: 6px;
       border: 1px solid var(--border);
       background: var(--surface);
       color: var(--text-2);
@@ -549,6 +605,7 @@
       touch-action: manipulation;
       transition: background 0.15s, border-color 0.15s, color 0.15s;
       white-space: nowrap;
+      min-height: 40px;
     }
     .filter-btn:hover {
       border-color: var(--navy);
@@ -570,6 +627,7 @@
       background: var(--surface);
       transition: border-color 0.15s, box-shadow 0.15s;
       cursor: pointer;
+      min-height: 40px;
     }
     .date-input:focus {
       outline: none;
@@ -579,10 +637,10 @@
 
     /* ── Filtros ── */
     #filters {
-      display: flex; gap: 12px; align-items: center;
+      display: flex; gap: 8px; align-items: center;
       margin-bottom: 16px; flex-wrap: wrap;
     }
-    #filterCat, #filterProv {
+    #filterBank, #filterCategory, #filterProv {
       padding: 7px 12px;
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -591,8 +649,11 @@
       color: var(--text-1);
       background: var(--surface);
       transition: border-color 0.15s, box-shadow 0.15s;
+      cursor: pointer;
+      min-height: 40px;
     }
-    #filterCat:focus, #filterProv:focus {
+    #filterProv { cursor: text; }
+    #filterBank:focus, #filterCategory:focus, #filterProv:focus {
       outline: none;
       border-color: var(--navy);
       box-shadow: 0 0 0 3px var(--border-soft);
@@ -611,18 +672,31 @@
       text-overflow: unset;
     }
 
-    /* ── Select de categoría con apariencia de badge ── */
+    /* ── Select de categoría con apariencia de badge (color por categoría) ── */
     .badge-select {
       appearance: none;
       border: none;
       font-size: 11px;
       font-weight: 500;
-      padding: 3px 8px;
-      border-radius: 20px;
+      padding: 3px 10px;
+      border-radius: 9999px;
       cursor: pointer;
       font-family: inherit;
-      text-transform: uppercase;
       letter-spacing: 0.06em;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: filter 0.15s;
+      /* El color del badge se aplica inline por categoría en buildRow() */
+    }
+    .badge-select:hover { filter: brightness(0.97); }
+    .badge-select:focus { outline: none; box-shadow: 0 0 0 2px var(--border-soft); }
+    /* La lista desplegable siempre legible: fondo blanco y texto negro,
+       independiente del color del badge. */
+    .badge-select option {
+      background-color: #ffffff !important;
+      color: #111111 !important;
+      text-transform: none;
     }
 
     /* ── Checkbox de selección ── */
@@ -727,7 +801,7 @@
       display: flex; align-items: center; gap: 4px;
     }
     .page-btn {
-      min-width: 34px; height: 34px; padding: 0 8px;
+      min-width: 38px; height: 38px; padding: 0 8px;
       border-radius: 6px; border: 1px solid var(--border);
       background: var(--surface); color: var(--text-2);
       font-family: var(--mono); font-size: 13px;
@@ -752,7 +826,7 @@
       .header{ padding: 0 20px; }
       .stats { grid-template-columns: 1fr 1fr; }
       .stat-card:nth-child(3) { grid-column: span 2; }
-      .td-desc, .td-folio { display: none; }
+      .td-desc { display: none; }
       .header-sub { display: none; }
     }
     @media (max-width: 600px) {
@@ -884,19 +958,18 @@
       <span class="section-meta" id="lastUpdate">—</span>
     </div>
     <div id="filters">
-      <label class="sr-only" for="filterCat">Filtrar por categoría</label>
-      <select id="filterCat">
-        <option value="">Todas las categorías</option>
-        <option value="alimentacion">Alimentación</option>
-        <option value="transporte">Transporte</option>
-        <option value="oficina">Oficina</option>
-        <option value="servicios">Servicios</option>
-        <option value="tecnologia">Tecnología</option>
-        <option value="salud">Salud</option>
-        <option value="otro">Otro</option>
+      <label class="filter-label" for="filterBank">Banco</label>
+      <select id="filterBank">
+        <option value="">Todos los bancos</option>
+        <option value="Pichincha">Pichincha</option>
+        <option value="Produbanco">Produbanco</option>
+        <option value="BGR">BGR</option>
       </select>
-      <label class="sr-only" for="filterProv">Buscar por proveedor</label>
-      <input id="filterProv" type="search" placeholder="Buscar proveedor…">
+      <label class="filter-label" for="filterCategory">Categoría</label>
+      <select id="filterCategory">
+        <option value="">Todas las categorías</option>
+      </select>
+      <input id="filterProv" type="search" placeholder="Buscar proveedor…" aria-label="Buscar por proveedor">
       <button class="btn" onclick="clearFilters()">Limpiar</button>
     </div>
     <div class="table-wrap" id="tableWrap">
@@ -971,12 +1044,104 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
+  /* ─── Constants ─── */
+  const BANKS = ['—', 'Pichincha', 'Produbanco', 'BGR']
+
   /* ─── State ─── */
   let expenses = []
-  let dateFrom = (() => { const d = new Date(); d.setDate(d.getDate() - 6); return d.toISOString().split('T')[0] })()
-  let dateTo   = new Date().toISOString().split('T')[0]
+  let categories = []
+  function getLast7Days() {
+    const to   = new Date()
+    const from = new Date(to); from.setDate(from.getDate() - 6)
+    return { from: from.toISOString().split('T')[0], to: to.toISOString().split('T')[0] }
+  }
+  const _init = getLast7Days()
+  let dateFrom = _init.from
+  let dateTo   = _init.to
   let currentPage = 1
   const PAGE_SIZE = 10
+
+  /* ─── Categories ─── */
+  async function loadCategories() {
+    try {
+      const r = await fetch('/api/categories')
+      categories = await r.json()
+    } catch {
+      categories = ['IESS', 'Sueldos', 'Adelantos', 'Otro']
+    }
+  }
+
+  /* ─── Categorías: orden y color ─── */
+  const CATEGORY_COLORS = [
+    { bg: '#EEF2FF', text: '#4338CA' }, // índigo
+    { bg: '#F0FDF4', text: '#15803D' }, // verde
+    { bg: '#FFF7ED', text: '#C2410C' }, // naranja
+    { bg: '#FDF4FF', text: '#9333EA' }, // púrpura
+    { bg: '#ECFDF5', text: '#065F46' }, // esmeralda
+    { bg: '#FEF2F2', text: '#B91C1C' }, // rojo
+    { bg: '#EFF6FF', text: '#1D4ED8' }, // azul
+    { bg: '#FEFCE8', text: '#A16207' }, // amarillo
+  ]
+
+  function getCategoryColor(categoryName) {
+    // "Otro" siempre el último color de la paleta, independiente del índice
+    if ((categoryName || '').toLowerCase() === 'otro') {
+      return CATEGORY_COLORS[CATEGORY_COLORS.length - 1]
+    }
+    const idx = categories.findIndex(
+      c => c.toLowerCase() === (categoryName || '').toLowerCase()
+    )
+    return CATEGORY_COLORS[idx % CATEGORY_COLORS.length] || { bg: '#F3F4F6', text: '#374151' }
+  }
+
+  // Orden de categorías: alfabético con "Otro" siempre al final
+  function sortedCategories() {
+    return categories
+      .filter(c => c.toLowerCase() !== 'otro')
+      .sort()
+      .concat(['Otro'])
+  }
+
+  // Capitalización: todo en MAYÚSCULAS excepto "Otro"
+  function formatCategory(name) {
+    if (!name) return ''
+    if (name.toLowerCase() === 'otro') return 'Otro'
+    return name.toUpperCase()
+  }
+
+  function applyBadgeColor(el, categoryName) {
+    const col = getCategoryColor(categoryName)
+    el.style.backgroundColor = col.bg
+    el.style.color = col.text
+  }
+
+  function populateFilterCat() {
+    const opts = '<option value="">Todas las categorías</option>' +
+      sortedCategories().map(c => `<option value="${c}">${esc(formatCategory(c))}</option>`).join('')
+    const sel = document.getElementById('filterCategory')
+    if (!sel) return
+    const current = sel.value
+    sel.innerHTML = opts
+    if (categories.includes(current)) sel.value = current
+  }
+
+  function refreshBadgeSelects() {
+    document.querySelectorAll('.badge-select').forEach(sel => {
+      const current = sel.dataset.prevValue || sel.value
+      sel.innerHTML =
+        sortedCategories().map(c => `<option value="${c}">${esc(formatCategory(c))}</option>`).join('') +
+        '<option value="__add__">+ Agregar categoría</option>'
+      sel.value = categories.includes(current) ? current : (categories[0] || 'Otro')
+    })
+  }
+
+  function showSimpleToast(msg) {
+    const d = document.createElement('div')
+    d.className = 'toast'
+    d.innerHTML = `<div class="toast-title">${esc(msg)}</div>`
+    document.getElementById('toasts').appendChild(d)
+    setTimeout(() => d.remove(), 4000)
+  }
 
   /* ─── Socket ─── */
   const socket = io()
@@ -994,7 +1159,9 @@
     document.getElementById('authBanner').style.display = 'flex'
   })
 
-  socket.on('init', ({ expenses: list }) => {
+  socket.on('init', async ({ expenses: list }) => {
+    await loadCategories()
+    populateFilterCat()
     expenses = list
     currentPage = 1
     render()
@@ -1066,16 +1233,15 @@
 
   function theadHTML() {
     return `<thead><tr>
-      <th class="td-check"><input type="checkbox" id="cbAll" class="cb-row" onchange="toggleSelectAll(this)"></th>
+      <th class="td-check" style="width:36px"></th>
       <th style="width:48px"></th>
-      <th>Proveedor</th>
-      <th>No. Factura</th>
-      <th>Fecha</th>
-      <th class="r">Total</th>
-      <th class="r">IVA</th>
-      <th>Categoría</th>
-      <th>Descripción</th>
-      <th style="width:48px"></th>
+      <th style="width:180px">Proveedor</th>
+      <th style="width:105px">Fecha</th>
+      <th class="r" style="width:120px">Total</th>
+      <th style="width:150px">Banco</th>
+      <th style="width:120px">Categoría</th>
+      <th style="width:200px">Descripción</th>
+      <th style="width:40px"></th>
     </tr></thead>`
   }
 
@@ -1094,29 +1260,35 @@
   }
 
   function buildRow(e) {
-    const cat = (e.categoria || 'otro').toLowerCase()
+    const cat = (e.categoria || 'Otro')
     const cur = e.moneda || 'USD'
+    const banco = e.banco || '—'
     const tr  = document.createElement('tr')
     tr.dataset.id = e.id
     tr.innerHTML = `
       <td class="td-check"><input type="checkbox" class="cb-row" data-id="${esc(e.id)}" onchange="onRowCheckChange()"></td>
       ${thumbHTML(e)}
       <td class="td-name td-editable" contenteditable="true"
-          data-id="${esc(e.id)}" data-field="proveedor">${esc(e.proveedor || '')}</td>
-      <td class="td-folio">${esc(e.numero_factura || '—')}</td>
+          data-id="${esc(e.id)}" data-field="proveedor" title="${esc(e.proveedor || '')}">${esc(e.proveedor || '')}</td>
       <td class="td-date">${e.fecha || '—'}</td>
       <td class="td-amt">${esc(cur)} ${fmtAmt(e.total)}</td>
-      <td class="td-tax">${fmtAmt(e.iva)}</td>
       <td>
-        <select class="badge b-${cat} badge-select" data-id="${esc(e.id)}">
-          ${['alimentacion','transporte','oficina','servicios','tecnologia','salud','otro']
-            .map(c => `<option value="${c}" ${c === cat ? 'selected' : ''}>${cap(c)}</option>`)
-            .join('')}
+        <select class="bank-select" data-id="${esc(e.id)}" aria-label="Banco">
+          ${BANKS.map(b => `<option value="${b}" ${b === banco ? 'selected' : ''}>${esc(b)}</option>`).join('')}
         </select>
       </td>
-      <td class="td-desc td-editable" contenteditable="true"
-          data-id="${esc(e.id)}" data-field="descripcion"
-          title="${esc(e.descripcion || '')}">${esc(e.descripcion || '—')}</td>
+      <td>
+        <select class="badge-select" data-id="${esc(e.id)}" data-prev-value="${esc(cat)}" aria-label="Categoría"
+                style="background-color:${getCategoryColor(cat).bg};color:${getCategoryColor(cat).text}">
+          ${sortedCategories().map(c => `<option value="${esc(c)}" ${c === cat ? 'selected' : ''}>${esc(formatCategory(c))}</option>`).join('')}
+          <option value="__add__">+ Agregar categoría</option>
+        </select>
+      </td>
+      <td class="td-desc"
+          data-id="${esc(e.id)}"
+          data-state="collapsed"
+          data-desc="${esc(e.descripcion || '')}"
+          title="${esc(e.descripcion || '')}"><span class="td-desc-text">${esc(e.descripcion || '—')}</span></td>
       <td class="td-del">
         <button class="btn-delete" onclick="deleteExpense('${esc(e.id)}', this)" title="Eliminar factura" aria-label="Eliminar factura">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1324,13 +1496,16 @@
   }
 
   /* ─── Filtros ─── */
-  function filterExpenses(list, from, to) {
-    if (!from && !to) return list
+  function filterExpenses(list, from, to, categoryFilter, bankFilter, providerFilter) {
+    if (!from && !to && !categoryFilter && !bankFilter && !providerFilter) return list
     return list.filter(e => {
       const d = e.fecha || e.createdAt?.slice(0,10)
-      if (!d) return false
+      if ((from || to) && !d) return false
       if (from && d < from) return false
       if (to   && d > to)   return false
+      if (categoryFilter && (e.categoria || '') !== categoryFilter) return false
+      if (bankFilter && (e.banco || '—') !== bankFilter) return false
+      if (providerFilter && !(e.proveedor || '').toLowerCase().includes(providerFilter.toLowerCase())) return false
       return true
     })
   }
@@ -1347,13 +1522,10 @@
   }
 
   function getCurrentFiltered() {
-    const cat  = document.getElementById('filterCat').value.toLowerCase()
-    const prov = document.getElementById('filterProv').value.toLowerCase().trim()
-    return filterExpenses(expenses, dateFrom, dateTo).filter(e => {
-      const matchCat  = !cat  || (e.categoria || '').toLowerCase() === cat
-      const matchProv = !prov || (e.proveedor  || '').toLowerCase().includes(prov)
-      return matchCat && matchProv
-    })
+    const cat  = document.getElementById('filterCategory').value
+    const bank = document.getElementById('filterBank').value
+    const prov = document.getElementById('filterProv').value.trim()
+    return filterExpenses(expenses, dateFrom, dateTo, cat, bank, prov)
   }
 
   function setQuickFilter(period, btn) {
@@ -1371,7 +1543,7 @@
       const monday = new Date(today); monday.setDate(today.getDate() + (day === 0 ? -6 : 1 - day))
       dateFrom = monday.toISOString().split('T')[0]; dateTo = todayStr
     } else {
-      dateFrom = ''; dateTo = ''
+      const r = getLast7Days(); dateFrom = r.from; dateTo = r.to
     }
     document.getElementById('dateFrom').value = dateFrom
     document.getElementById('dateTo').value   = dateTo
@@ -1443,8 +1615,9 @@
   }
 
   function clearFilters() {
-    document.getElementById('filterCat').value  = ''
-    document.getElementById('filterProv').value = ''
+    document.getElementById('filterCategory').value = ''
+    document.getElementById('filterBank').value     = ''
+    document.getElementById('filterProv').value     = ''
     applyFilters()
   }
 
@@ -1452,7 +1625,8 @@
   document.getElementById('dateFrom').value = dateFrom
   document.getElementById('dateTo').value   = dateTo
 
-  document.getElementById('filterCat').addEventListener('change', applyFilters)
+  document.getElementById('filterCategory').addEventListener('change', applyFilters)
+  document.getElementById('filterBank').addEventListener('change', applyFilters)
   document.getElementById('filterProv').addEventListener('input', applyFilters)
 
   /* ─── Edición inline ─── */
@@ -1476,24 +1650,172 @@
     el.dataset.original = el.textContent.trim()
   }, true)
 
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Enter') return
+    const el = ev.target.closest('[data-field]')
+    if (!el || !el.isContentEditable) return
+    ev.preventDefault()
+    el.blur()
+  }, true)
+
   document.addEventListener('blur', async (ev) => {
     const el = ev.target.closest('[data-field]')
     if (!el || !el.isContentEditable) return
-    const value = el.textContent.trim()
+    const value = el.textContent
+      .replace(/[\r\n]+/g, ' ')
+      .trim()
+      .replace(/\s+/g, ' ')
     if (value === el.dataset.original) return
     await patchExpense(el.dataset.id, { [el.dataset.field]: value })
   }, true)
 
-  // change en select de categoría → PATCH inmediato
+  // change en selects de tabla → PATCH inmediato
   document.addEventListener('change', async (ev) => {
-    const el = ev.target.closest('.badge-select')
-    if (!el) return
-    el.classList.remove(...[...el.classList].filter(c => c.startsWith('b-')))
-    el.classList.add(`b-${el.value}`)
-    await patchExpense(el.dataset.id, { categoria: el.value })
+    // Banco
+    const bankEl = ev.target.closest('.bank-select')
+    if (bankEl) {
+      await patchExpense(bankEl.dataset.id, { banco: bankEl.value })
+      return
+    }
+
+    // Categoría
+    const catEl = ev.target.closest('.badge-select')
+    if (!catEl) return
+
+    if (catEl.value === '__add__') {
+      const prevVal = catEl.dataset.prevValue || (categories[0] || 'Otro')
+      const name = prompt('Nombre de la nueva categoría:')
+      if (!name || !name.trim()) { catEl.value = prevVal; return }
+      try {
+        const r = await fetch('/api/categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: formatCategory(name.trim()) })
+        })
+        if (!r.ok) {
+          showSimpleToast('Esa categoría ya existe')
+          catEl.value = prevVal
+          return
+        }
+        categories = await r.json()
+        populateFilterCat()
+        refreshBadgeSelects()
+        const newCat = categories[categories.length - 1]
+        catEl.value = newCat
+        catEl.dataset.prevValue = newCat
+        applyBadgeColor(catEl, newCat)
+        await patchExpense(catEl.dataset.id, { categoria: newCat })
+      } catch {
+        showSimpleToast('Error al agregar categoría')
+        catEl.value = catEl.dataset.prevValue || (categories[0] || 'Otro')
+      }
+      return
+    }
+
+    catEl.dataset.prevValue = catEl.value
+    applyBadgeColor(catEl, catEl.value)
+    await patchExpense(catEl.dataset.id, { categoria: catEl.value })
+  })
+
+  /* ─── Descripción: 3 estados ─── */
+  function collapseDesc(td) {
+    td.dataset.state = 'collapsed'
+    td.classList.remove('td-desc--expanded', 'td-desc--editing')
+    const text = td.dataset.desc || ''
+    td.title = text
+    td.innerHTML = `<span class="td-desc-text">${esc(text || '—')}</span>`
+  }
+
+  function expandDesc(td) {
+    td.dataset.state = 'expanded'
+    td.classList.add('td-desc--expanded')
+    td.classList.remove('td-desc--editing')
+    const text = td.dataset.desc || '—'
+    td.title = ''
+    td.innerHTML = `<span class="td-desc-text">${esc(text)}</span>`
+  }
+
+  function editDesc(td) {
+    td.dataset.state = 'editing'
+    td.classList.add('td-desc--editing')
+    td.classList.remove('td-desc--expanded')
+    const original = td.dataset.desc || ''
+    const ta = document.createElement('textarea')
+    ta.className = 'desc-textarea'
+    ta.value = original
+    td.innerHTML = ''
+    td.title = ''
+    td.appendChild(ta)
+    ta.focus()
+    ta.setSelectionRange(ta.value.length, ta.value.length)
+
+    const autoResize = () => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px' }
+    autoResize()
+    ta.addEventListener('input', autoResize)
+
+    let handled = false
+
+    async function commit() {
+      if (handled) return
+      handled = true
+      const newVal = ta.value.trim()
+      td.dataset.desc = newVal
+      collapseDesc(td)
+      if (newVal !== original) {
+        await patchExpense(td.dataset.id, { descripcion: newVal })
+        const idx = expenses.findIndex(ex => ex.id === td.dataset.id)
+        if (idx !== -1) expenses[idx].descripcion = newVal
+      }
+    }
+
+    function cancel() {
+      if (handled) return
+      handled = true
+      collapseDesc(td)
+    }
+
+    ta.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); cancel(); return }
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); commit() }
+    })
+    ta.addEventListener('blur', commit)
+  }
+
+  let _descTimer = null
+
+  document.addEventListener('click', (ev) => {
+    if (ev.target.classList.contains('desc-textarea')) return
+    const td = ev.target.closest('.td-desc')
+    if (!td) {
+      clearTimeout(_descTimer)
+      document.querySelectorAll('.td-desc[data-state="expanded"]').forEach(el => collapseDesc(el))
+      return
+    }
+    if (td.dataset.state === 'editing') return
+    clearTimeout(_descTimer)
+    _descTimer = setTimeout(() => {
+      if (td.dataset.state === 'expanded') {
+        collapseDesc(td)
+      } else {
+        document.querySelectorAll('.td-desc[data-state="expanded"]').forEach(el => { if (el !== td) collapseDesc(el) })
+        expandDesc(td)
+      }
+    }, 230)
+  })
+
+  document.addEventListener('dblclick', (ev) => {
+    if (ev.target.classList.contains('desc-textarea')) return
+    const td = ev.target.closest('.td-desc')
+    if (!td) return
+    clearTimeout(_descTimer)
+    ev.preventDefault()
+    editDesc(td)
   })
 
   /* ─── Helpers ─── */
+  function sanitizeText(s) {
+    return String(s || '').replace(/[\r\n]+/g, ' ').trim().replace(/\s+/g, ' ')
+  }
   function fmtAmt(n) {
     return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n) || 0)
   }
