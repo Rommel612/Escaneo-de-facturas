@@ -30,13 +30,24 @@ export function addExpense(expense) {
   return item
 }
 
+let writeQueue = Promise.resolve()
+
 export function updateExpense(id, fields) {
-  const data = load()
-  const idx = data.expenses.findIndex(e => e.id === id)
-  if (idx === -1) return null
-  data.expenses[idx] = { ...data.expenses[idx], ...fields }
-  save(data)
-  return data.expenses[idx]
+  const ALLOWED = ['proveedor', 'descripcion', 'categoria']
+
+  writeQueue = writeQueue.then(() => {
+    const data = load()
+    const idx = data.expenses.findIndex(e => e.id === id)
+    if (idx === -1) return null
+    const patch = Object.fromEntries(
+      Object.entries(fields).filter(([k, v]) => ALLOWED.includes(k) && v !== undefined)
+    )
+    data.expenses[idx] = { ...data.expenses[idx], ...patch, updatedAt: new Date().toISOString() }
+    save(data)
+    return data.expenses[idx]
+  })
+
+  return writeQueue
 }
 
 export function deleteExpense(id) {

@@ -83,11 +83,13 @@ export function buildHelpMsg() {
   return [
     '*Panel de Facturas — Bot contable*',
     '',
-    'Envíame una *foto* o *PDF* de cualquier factura o recibo y la procesaré automáticamente con IA.',
+    'Para registrar una factura:',
+    '1. Envía la foto o PDF',
+    '2. Responde ese mensaje con *!fac*',
     '',
-    'Comandos disponibles:',
-    '• *ayuda* — este mensaje',
-    '• *resumen* — total de gastos del día de hoy'
+    'Comandos:',
+    '• *!help* — este mensaje',
+    '• *!res* — total de gastos de hoy'
   ].join('\n')
 }
 

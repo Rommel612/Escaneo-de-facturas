@@ -11,16 +11,33 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #FBFBFA;
-      --surface: #FFFFFF;
-      --border: #EAEAEA;
-      --text-1: #111111;
-      --text-2: #787774;
-      --text-3: #B0ADA8;
-      --serif: 'Newsreader', 'Georgia', serif;
-      --sans: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-      --mono: 'Geist Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      /* ── Paleta Navy / Dorado ── */
+      --navy:           #1A3A5C;
+      --navy-dark:      #0F2338;
+      --navy-deeper:    #0A1929;
+      --gold:           #C9A84C;
+      --gold-light:     #E8C97A;
+      --gold-muted:     rgba(201,168,76,0.15);
+      --gold-border:    rgba(201,168,76,0.30);
 
+      /* ── Cuerpo (crema) ── */
+      --bg:             #F8F5EE;
+      --bg-dark:        #EDE9DF;
+      --surface:        #FFFFFF;
+      --border:         #E2DDD4;
+      --border-soft:    rgba(26,58,92,0.08);
+
+      /* ── Texto ── */
+      --text-1:         #1C1C1E;
+      --text-2:         #6B7280;
+      --text-3:         #A8A29E;
+
+      /* ── Tipografías ── */
+      --serif: 'Newsreader', 'Georgia', serif;
+      --sans:  'Helvetica Neue', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --mono:  'Geist Mono', 'SF Mono', 'Fira Code', monospace;
+
+      /* ── Badges de categoría (sin cambios) ── */
       --c-alimentacion-bg: #FBF3DB; --c-alimentacion: #956400;
       --c-transporte-bg:   #E1F3FE; --c-transporte:   #1F6C9F;
       --c-oficina-bg:      #FDEBEC; --c-oficina:      #9F2F2D;
@@ -40,111 +57,221 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Layout ── */
-    .page { max-width: 1280px; margin: 0 auto; padding: 0 40px 80px; }
+    /* ════════════════════════════════════════
+       HEADER — Navy oscuro full-width
+    ════════════════════════════════════════ */
+    .header-shell {
+      background: var(--navy-dark);
+      border-bottom: 1px solid rgba(201,168,76,0.18);
+      /* Textura sutil: ruido muy suave */
+      position: relative;
+    }
+    /* Línea decorativa dorada inferior */
+    .header-shell::after {
+      content: '';
+      display: block;
+      position: absolute;
+      bottom: -1px; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--gold-light) 50%, var(--gold) 70%, transparent 100%);
+      opacity: 0.6;
+    }
 
-    /* ── Header ── */
     .header {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 32px 0 28px;
-      border-bottom: 1px solid var(--border);
+      height: 68px;
+      gap: 24px;
     }
-    .header-left { display: flex; align-items: baseline; gap: 18px; }
-    .logo {
+
+    .header-left { display: flex; align-items: center; gap: 20px; }
+
+    /* Ícono / marca */
+    .logo-mark {
+      width: 34px; height: 34px;
+      background: var(--gold-muted);
+      border: 1px solid var(--gold-border);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-mark svg { fill: var(--gold); }
+
+    .logo-text {
       font-family: var(--serif);
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 300;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.02em;
+      color: #FFFFFF;
       line-height: 1;
     }
-    .logo-sep {
-      display: inline-block;
-      width: 1px;
-      height: 14px;
-      background: var(--border);
-      margin: 0 4px;
-      vertical-align: middle;
+    .logo-text span { color: var(--gold-light); }
+
+    .logo-sep-v {
+      width: 1px; height: 18px;
+      background: rgba(255,255,255,0.12);
     }
-    .header-sub { font-size: 13px; color: var(--text-2); }
 
-    .header-right { display: flex; align-items: center; gap: 16px; }
-
-    .wa-status {
-      display: flex;
-      align-items: center;
-      gap: 7px;
+    .header-sub {
       font-size: 12px;
       font-family: var(--mono);
-      color: var(--text-2);
+      color: rgba(255,255,255,0.58);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.07em;
+    }
+
+    /* Status dots — en header navy */
+    .header-right { display: flex; align-items: center; gap: 14px; }
+
+    .wa-status {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; font-family: var(--mono);
+      color: rgba(255,255,255,0.62);
+      text-transform: uppercase; letter-spacing: 0.07em;
     }
     .wa-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--text-3);
-      flex-shrink: 0;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); flex-shrink: 0;
       transition: background 0.4s;
     }
-    .wa-dot.on { background: #5B8A5B; animation: blink 2.4s ease-in-out infinite; }
-    .wa-dot.off { background: #C0564A; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+    .wa-dot.on  { background: #5FCC7A; animation: blink 2.4s ease-in-out infinite; }
+    .wa-dot.off { background: #E05252; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
+    /* Divisor vertical entre status y botones */
+    .hdr-div {
+      width: 1px; height: 20px;
+      background: rgba(255,255,255,0.10);
+    }
+
+    /* ── Botones en header ── */
     .btn {
       display: inline-flex; align-items: center; gap: 7px;
       font-family: var(--sans); font-size: 13px; font-weight: 500;
-      padding: 9px 18px; border-radius: 5px;
-      border: 1px solid var(--border); background: var(--surface);
-      color: var(--text-1); cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
+      padding: 8px 16px; border-radius: 6px;
+      border: 1px solid var(--gold-border);
+      background: var(--gold-muted);
+      color: var(--gold-light);
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
       white-space: nowrap;
+      letter-spacing: 0.01em;
     }
-    .btn:hover { background: #F4F3F1; }
+    .btn:hover {
+      background: rgba(201,168,76,0.22);
+      border-color: rgba(201,168,76,0.50);
+    }
     .btn:active { transform: scale(0.97); }
-    .btn-dark { background: #111; color: #fff; border-color: #111; }
-    .btn-dark:hover { background: #2A2A2A; }
+
+    /* Botón primario dorado sólido */
+    .btn-primary {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--navy-dark);
+      font-weight: 600;
+    }
+    .btn-primary:hover {
+      background: var(--gold-light);
+      border-color: var(--gold-light);
+    }
+
+    /* ════════════════════════════════════════
+       CONTENIDO — Crema
+    ════════════════════════════════════════ */
+    .page { max-width: 1280px; margin: 0 auto; padding: 0 40px 80px; }
+
+    /* ── Auth Banner ── */
+    #authBanner {
+      display: none;
+      margin-top: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold);
+      border-radius: 12px;
+      padding: 32px 36px;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
 
     /* ── Stats ── */
-    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; padding: 36px 0 0; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      padding: 36px 0 0;
+    }
 
     .stat-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 32px 36px;
+      padding: 28px 32px;
+      position: relative;
+      overflow: hidden;
       opacity: 0;
       transform: translateY(14px);
       animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) forwards;
     }
-    .stat-card:nth-child(1){animation-delay:0ms}
-    .stat-card:nth-child(2){animation-delay:75ms}
-    .stat-card:nth-child(3){animation-delay:150ms}
+    .stat-card:nth-child(1){ animation-delay:   0ms }
+    .stat-card:nth-child(2){ animation-delay:  80ms }
+    .stat-card:nth-child(3){ animation-delay: 160ms }
+
+    /* Acento dorado lateral en stat-card */
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: linear-gradient(180deg, var(--gold) 0%, transparent 100%);
+      opacity: 0.6;
+    }
+
     @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
 
     .stat-label {
-      font-size: 11px; font-weight: 500; text-transform: uppercase;
-      letter-spacing: 0.09em; color: var(--text-2); margin-bottom: 14px;
+      font-size: 12px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.09em;
+      color: var(--text-2); margin-bottom: 12px;
     }
-    .stat-value {
-      font-family: var(--serif); font-size: 40px; font-weight: 300;
-      letter-spacing: -0.04em; line-height: 1; color: var(--text-1);
-    }
-    .stat-sub { font-family: var(--mono); font-size: 12px; color: var(--text-3); margin-top: 10px; }
 
-    /* ── Table section ── */
+    /* El valor numérico toma el dorado del acento */
+    .stat-value {
+      font-family: var(--serif);
+      font-size: 40px; font-weight: 300;
+      letter-spacing: -0.04em; line-height: 1;
+      color: var(--navy);
+    }
+
+    .stat-sub {
+      font-family: var(--mono);
+      font-size: 12px; color: var(--text-3);
+      margin-top: 10px;
+    }
+
+    /* ── Section ── */
     .section { padding: 44px 0 0; }
     .section-head {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 20px;
     }
     .section-title {
-      font-family: var(--serif); font-size: 22px; font-weight: 300;
+      font-family: var(--serif);
+      font-size: 22px; font-weight: 300;
       letter-spacing: -0.025em;
+      color: var(--text-1);
     }
-    .section-meta { font-family: var(--mono); font-size: 12px; color: var(--text-2); }
+    .section-meta {
+      font-family: var(--mono);
+      font-size: 12px; color: var(--text-2);
+    }
 
+    /* ── Tabla ── */
     .table-wrap {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -155,11 +282,14 @@
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
 
     thead th {
-      text-align: left; padding: 14px 22px;
-      font-size: 11px; font-weight: 500; text-transform: uppercase;
-      letter-spacing: 0.07em; color: var(--text-2);
-      border-bottom: 1px solid var(--border); background: #FAFAF8;
-      white-space: nowrap; vertical-align: middle;
+      text-align: left;
+      padding: 13px 22px;
+      font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--text-2);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      white-space: nowrap;
     }
     thead th.r { text-align: right; }
 
@@ -168,19 +298,40 @@
       transition: background 0.12s;
     }
     tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: #FAFAF8; }
+    tbody tr:hover { background: var(--bg); }
 
-    tbody td { padding: 17px 22px; vertical-align: middle; }
+    tbody td { padding: 16px 22px; vertical-align: middle; }
 
-    .td-name  { font-weight: 500; min-width: 140px; max-width: 180px; word-break: break-word; }
+    .td-name  { font-weight: 500; color: var(--navy); }
     .td-folio { font-family: var(--mono); font-size: 12px; color: var(--text-2); }
     .td-date  { font-family: var(--mono); font-size: 13px; color: var(--text-2); white-space: nowrap; }
-    .td-amt   { font-family: var(--mono); font-size: 14px; font-weight: 500; text-align: right; white-space: nowrap; }
+    .td-amt   {
+      font-family: var(--mono); font-size: 14px; font-weight: 500;
+      text-align: right; white-space: nowrap;
+      color: var(--navy);
+    }
     .td-tax   { font-family: var(--mono); font-size: 12px; color: var(--text-2); text-align: right; }
+    .td-del   { width: 48px; text-align: center; padding: 0 16px !important; }
+    .btn-delete {
+      width: 30px; height: 30px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-3);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    .btn-delete:hover {
+      background: #FEE2E2;
+      border-color: #FECACA;
+      color: #DC2626;
+    }
+    .btn-delete:active { transform: scale(0.93); }
+    .btn-delete:disabled { opacity: 0.4; cursor: not-allowed; }
     .td-desc {
-      max-width: 320px;
-      min-width: 200px;
-      text-align: left;
+      font-size: 13px; color: var(--text-2);
+      max-width: 220px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -188,14 +339,16 @@
       transition: all 0.2s ease;
       user-select: none;
     }
+
     .td-desc.expanded {
       white-space: normal;
       overflow: visible;
       text-overflow: unset;
-      max-width: 320px;
+      max-width: 220px;
       word-break: break-word;
       cursor: pointer;
     }
+
     .td-desc:hover {
       color: #111111;
       opacity: 0.75;
@@ -203,38 +356,24 @@
 
     /* ── Badges ── */
     .badge {
-      display: inline-block; padding: 3px 11px;
+      display: inline-block; padding: 3px 10px;
       border-radius: 9999px; font-size: 11px; font-weight: 500;
       text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
     }
-    .b-alimentacion{background:var(--c-alimentacion-bg);color:var(--c-alimentacion)}
-    .b-transporte  {background:var(--c-transporte-bg);  color:var(--c-transporte)}
-    .b-oficina     {background:var(--c-oficina-bg);     color:var(--c-oficina)}
-    .b-servicios   {background:var(--c-servicios-bg);   color:var(--c-servicios)}
-    .b-tecnologia  {background:var(--c-tecnologia-bg);  color:var(--c-tecnologia)}
-    .b-salud       {background:var(--c-salud-bg);       color:var(--c-salud)}
-    .b-otro        {background:var(--c-otro-bg);        color:var(--c-otro)}
+    .b-alimentacion { background: var(--c-alimentacion-bg); color: var(--c-alimentacion); }
+    .b-transporte   { background: var(--c-transporte-bg);   color: var(--c-transporte);   }
+    .b-oficina      { background: var(--c-oficina-bg);      color: var(--c-oficina);      }
+    .b-servicios    { background: var(--c-servicios-bg);    color: var(--c-servicios);    }
+    .b-tecnologia   { background: var(--c-tecnologia-bg);   color: var(--c-tecnologia);   }
+    .b-salud        { background: var(--c-salud-bg);        color: var(--c-salud);        }
+    .b-otro         { background: var(--c-otro-bg);         color: var(--c-otro);         }
 
-    /* ── Delete / Download buttons ── */
-    .btn-del, .btn-dl {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 28px; height: 28px; border-radius: 6px;
-      border: none; background: transparent; cursor: pointer;
-      color: var(--text-3); opacity: 0;
-      transition: opacity 0.15s, background 0.15s, color 0.15s;
-      padding: 0; text-decoration: none;
-    }
-    tbody tr:hover .btn-del,
-    tbody tr:hover .btn-dl { opacity: 1; }
-    .btn-del:hover { background: #FEE2E2; color: #B91C1C; }
-    .btn-dl:hover  { background: #E1F3FE; color: #1F6C9F; }
-
-    /* ── Animate new row ── */
+    /* ── Nueva fila ── */
     @keyframes rowIn {
-      from { opacity:0; background:#EFF7EF; }
-      to   { opacity:1; background:transparent; }
+      from { opacity:0; background: rgba(201,168,76,0.08); }
+      to   { opacity:1; background: transparent; }
     }
-    .row-new { animation: rowIn 1.2s ease forwards; }
+    .row-new { animation: rowIn 1.4s ease forwards; }
 
     /* ── Empty state ── */
     .empty {
@@ -248,32 +387,82 @@
     }
     .empty-sub { font-size: 14px; color: var(--text-2); max-width: 340px; line-height: 1.55; }
 
-    /* ── Toasts ── */
+    /* ── Thumbnails ── */
+    .td-thumb { width: 48px; padding: 10px 12px 10px 22px !important; }
+    .thumb-img {
+      width: 40px; height: 40px; object-fit: cover;
+      border-radius: 6px; border: 1px solid var(--border);
+      cursor: zoom-in; display: block;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .thumb-img:hover { opacity: 0.82; transform: scale(1.06); }
+    .thumb-pdf {
+      width: 40px; height: 40px; border-radius: 6px;
+      border: 1px solid var(--border); background: #FDEBEC;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; text-decoration: none; transition: opacity 0.15s;
+    }
+    .thumb-pdf:hover { opacity: 0.75; }
+    .thumb-none {
+      width: 40px; height: 40px; border-radius: 6px;
+      border: 1px dashed var(--border); background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Toasts — navy + dorado ── */
     #toasts {
       position: fixed; bottom: 28px; right: 28px;
       display: flex; flex-direction: column; gap: 10px; z-index: 900;
     }
     .toast {
-      background: #111; color: #fff;
+      background: var(--navy-dark);
+      border: 1px solid var(--gold-border);
+      color: #fff;
       padding: 14px 20px; border-radius: 8px;
       font-size: 13px; max-width: 300px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 24px rgba(15,35,56,0.35);
       animation: toastIn 0.3s cubic-bezier(0.16,1,0.3,1) forwards;
     }
     @keyframes toastIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
-    .toast-title  { font-weight: 600; margin-bottom: 2px; }
+    .toast-title  { font-weight: 600; margin-bottom: 2px; color: var(--gold-light); }
     .toast-body   { font-size: 12px; opacity: 0.72; line-height: 1.4; }
+
+    /* ── Lightbox ── */
+    #lightbox {
+      display: none; position: fixed; inset: 0;
+      background: rgba(10,25,41,0.85); backdrop-filter: blur(6px);
+      z-index: 1000; align-items: center; justify-content: center;
+      cursor: zoom-out;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img {
+      max-width: min(90vw,900px); max-height: 90vh;
+      border-radius: 10px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+      cursor: default;
+    }
+    #lightboxClose {
+      position: fixed; top: 20px; right: 24px;
+      background: var(--gold-muted); border: 1px solid var(--gold-border);
+      color: var(--gold-light); font-size: 22px; line-height: 1;
+      cursor: pointer; border-radius: 6px;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    #lightboxClose:hover { background: rgba(201,168,76,0.25); }
 
     /* ── Modal ── */
     .overlay {
       display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.25); backdrop-filter: blur(4px);
+      background: rgba(10,25,41,0.55); backdrop-filter: blur(4px);
       z-index: 800; align-items: center; justify-content: center;
     }
     .overlay.open { display: flex; }
     .modal {
       background: var(--surface);
       border: 1px solid var(--border);
+      border-top: 3px solid var(--gold);
       border-radius: 16px; padding: 44px;
       max-width: 380px; width: 92%;
       text-align: center; position: relative;
@@ -282,10 +471,13 @@
       position: absolute; top: 16px; right: 20px;
       background: none; border: none; cursor: pointer;
       font-size: 22px; line-height: 1; color: var(--text-2);
+      transition: color 0.15s;
     }
+    .modal-close:hover { color: var(--text-1); }
     .modal-title {
       font-family: var(--serif); font-size: 24px; font-weight: 300;
       letter-spacing: -0.03em; margin-bottom: 8px;
+      color: var(--navy);
     }
     .modal-sub {
       font-size: 13px; color: var(--text-2);
@@ -307,162 +499,362 @@
     }
     .modal-no-phone code {
       font-family: var(--mono); font-size: 12px;
-      background: #EAEAEA; padding: 2px 6px; border-radius: 4px;
+      background: var(--bg-dark); padding: 2px 6px; border-radius: 4px;
     }
 
-    /* ── Thumbnail ── */
-    .td-thumb { width: 48px; padding: 10px 12px 10px 22px !important; }
-    .thumb-img {
-      width: 40px; height: 40px; object-fit: cover;
-      border-radius: 6px; border: 1px solid var(--border);
-      cursor: zoom-in; display: block;
-      transition: opacity 0.15s, transform 0.15s;
+    /* Botón primario dentro del modal */
+    .modal .btn-primary {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: #fff;
     }
-    .thumb-img:hover { opacity: 0.82; transform: scale(1.06); }
-    .thumb-pdf {
-      width: 40px; height: 40px; border-radius: 6px;
-      border: 1px solid var(--border); background: #FDEBEC;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; text-decoration: none;
-      transition: opacity 0.15s;
-    }
-    .thumb-pdf:hover { opacity: 0.75; }
-    .thumb-none {
-      width: 40px; height: 40px; border-radius: 6px;
-      border: 1px dashed var(--border); background: var(--bg);
-      display: flex; align-items: center; justify-content: center;
+    .modal .btn-primary:hover { background: var(--navy-dark); border-color: var(--navy-dark); }
+
+    /* ── Auth pairing code ── */
+    #pairingCode {
+      font-family: var(--mono);
+      font-size: 40px; font-weight: 500;
+      letter-spacing: 0.12em;
+      color: var(--navy);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 32px;
+      min-width: 220px;
+      display: inline-block;
     }
 
-    /* ── Image lightbox ── */
-    #lightbox {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.72); backdrop-filter: blur(6px);
-      z-index: 1000; align-items: center; justify-content: center;
-      cursor: zoom-out;
-    }
-    #lightbox.open { display: flex; }
-    #lightbox img {
-      max-width: min(90vw, 900px); max-height: 90vh;
-      border-radius: 10px; box-shadow: 0 24px 64px rgba(0,0,0,0.4);
-      cursor: default;
-    }
-    #lightboxClose {
-      position: fixed; top: 20px; right: 24px;
-      background: rgba(255,255,255,0.12); border: none; color: #fff;
-      font-size: 26px; line-height: 1; cursor: pointer;
-      border-radius: 6px; width: 40px; height: 40px;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s;
-    }
-    #lightboxClose:hover { background: rgba(255,255,255,0.22); }
-
-    /* ── Date filter bar ── */
+    /* ── Barra de filtros ── */
     .filter-bar {
-      display: flex;
-      align-items: flex-end;
-      gap: 14px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
+      display: flex; flex-direction: column; gap: 10px;
+      padding: 20px 0 0;
     }
-    .filter-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .filter-bar-row {
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
     }
     .filter-label {
-      font-size: 11px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
+      font-size: 12px; font-weight: 500;
       color: var(--text-2);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      white-space: nowrap;
     }
-    .filter-input {
-      font-family: var(--mono);
-      font-size: 13px;
-      padding: 8px 14px;
-      border-radius: 5px;
+    .filter-btn {
+      display: inline-flex; align-items: center;
+      font-family: var(--sans); font-size: 13px; font-weight: 500;
+      padding: 8px 16px; border-radius: 6px;
       border: 1px solid var(--border);
       background: var(--surface);
-      color: var(--text-1);
-      cursor: pointer;
-      transition: border-color 0.15s;
-      outline: none;
-    }
-    .filter-input:focus { border-color: #999; }
-    .filter-count {
-      font-family: var(--mono);
-      font-size: 12px;
       color: var(--text-2);
-      align-self: flex-end;
-      padding-bottom: 9px;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .filter-btn:hover {
+      border-color: var(--navy);
+      color: var(--navy);
+      background: var(--bg-dark);
+    }
+    .filter-btn.active {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: #fff;
+    }
+    .date-input {
+      padding: 7px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: var(--mono);
+      color: var(--text-1);
+      background: var(--surface);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      cursor: pointer;
+    }
+    .date-input:focus {
+      outline: none;
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px var(--border-soft);
     }
 
+    /* ── Filtros ── */
+    #filters {
+      display: flex; gap: 12px; align-items: center;
+      margin-bottom: 16px; flex-wrap: wrap;
+    }
+    #filterCat, #filterProv {
+      padding: 7px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: var(--sans);
+      color: var(--text-1);
+      background: var(--surface);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    #filterCat:focus, #filterProv:focus {
+      outline: none;
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px var(--border-soft);
+    }
+
+    /* ── Edición inline ── */
+    .td-editable { cursor: text; user-select: text; }
+    .td-editable:focus {
+      outline: 2px solid #0F7AFF;
+      border-radius: 4px;
+      background: #F0F7FF;
+      padding: 2px 4px;
+      /* muestra el texto completo mientras se edita */
+      overflow: visible;
+      white-space: normal;
+      text-overflow: unset;
+    }
+
+    /* ── Select de categoría con apariencia de badge ── */
+    .badge-select {
+      appearance: none;
+      border: none;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: inherit;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Checkbox de selección ── */
+    .td-check { width: 44px; padding: 0 8px 0 22px !important; }
+    .cb-row {
+      width: 16px; height: 16px;
+      accent-color: var(--gold);
+      cursor: pointer; vertical-align: middle;
+    }
+
+    /* ── Botón peligro (rojo) ── */
+    .btn-danger {
+      background: #DC2626; border-color: #DC2626;
+      color: #fff; font-weight: 600;
+    }
+    .btn-danger:hover { background: #B91C1C; border-color: #B91C1C; }
+
+    /* ── Barra de acciones masivas ── */
+    .bulk-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--navy-dark);
+      border-top: 2px solid var(--gold-border);
+      padding: 14px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px;
+      transform: translateY(100%);
+      transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
+      z-index: 500;
+      box-shadow: 0 -4px 24px rgba(10,25,41,0.3);
+    }
+    .bulk-bar.visible { transform: translateY(0); }
+    .bulk-info { font-size: 13px; color: rgba(255,255,255,0.65); font-family: var(--mono); }
+    .bulk-info strong { color: var(--gold-light); margin-right: 4px; }
+    .bulk-actions { display: flex; gap: 10px; align-items: center; }
+
     /* ── Responsive ── */
+    /* ── Visually hidden (accesibilidad) ── */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border-width: 0;
+    }
+
+    /* ── Números tabulares ── */
+    .stat-value, .td-amt, .td-tax, #pairingCode {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Stat card hover ── */
+    .stat-card { transition: box-shadow 0.2s, transform 0.2s; }
+    .stat-card:hover {
+      box-shadow: 0 4px 20px rgba(26,58,92,0.09);
+      transform: translateY(-1px);
+    }
+
+    /* ── Focus visible global ── */
+    :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; border-radius: 3px; }
+    .btn:focus-visible { outline-color: var(--gold); }
+
+    /* ── Modal: animación de entrada ── */
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.96) translateY(8px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .overlay.open .modal {
+      animation: modalIn 0.22s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    /* ── Skeleton shimmer ── */
+    @keyframes shimmer {
+      from { background-position: -600px 0; }
+      to   { background-position: 600px 0; }
+    }
+    .skeleton-wrap {
+      padding: 20px 24px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .skeleton-row {
+      height: 52px; border-radius: 8px;
+      background: linear-gradient(90deg, var(--bg) 25%, var(--bg-dark) 50%, var(--bg) 75%);
+      background-size: 1200px 100%;
+      animation: shimmer 1.5s ease-in-out infinite;
+    }
+    .skeleton-row:nth-child(1) { animation-delay: 0ms; }
+    .skeleton-row:nth-child(2) { animation-delay: 80ms; }
+    .skeleton-row:nth-child(3) { animation-delay: 160ms; }
+    .skeleton-row:nth-child(4) { animation-delay: 240ms; }
+
+    /* ── Paginación ── */
+    .pagination-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 22px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 0 0 12px 12px;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .pagination-info {
+      font-family: var(--mono); font-size: 12px; color: var(--text-2);
+    }
+    .pagination-controls {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .page-btn {
+      min-width: 34px; height: 34px; padding: 0 8px;
+      border-radius: 6px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text-2);
+      font-family: var(--mono); font-size: 13px;
+      cursor: pointer;
+      touch-action: manipulation;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .page-btn:hover:not(:disabled):not(.active) {
+      border-color: var(--navy); color: var(--navy); background: var(--bg-dark);
+    }
+    .page-btn.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+    .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .page-ellipsis {
+      min-width: 32px; height: 32px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 13px; color: var(--text-3);
+    }
+
     @media (max-width: 900px) {
-      .page { padding: 0 20px 60px; }
+      .page  { padding: 0 20px 60px; }
+      .header{ padding: 0 20px; }
       .stats { grid-template-columns: 1fr 1fr; }
       .stat-card:nth-child(3) { grid-column: span 2; }
       .td-desc, .td-folio { display: none; }
+      .header-sub { display: none; }
     }
     @media (max-width: 600px) {
-      .header { flex-direction: column; align-items: flex-start; gap: 16px; }
-      .stats { grid-template-columns: 1fr; }
+      .header { height: auto; padding: 14px 20px; flex-wrap: wrap; gap: 12px; }
+      .stats  { grid-template-columns: 1fr; }
       .stat-card { grid-column: auto !important; }
       .td-tax { display: none; }
+      .hdr-div { display: none; }
+      .wa-status:first-of-type { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
 <body>
 
-<div class="page">
-
-  <!-- Header -->
-  <header class="header">
+<!-- ══ HEADER NAVY ══════════════════════════════ -->
+<div class="header-shell">
+  <div class="header">
     <div class="header-left">
-      <div class="logo">Facturas<span class="logo-sep"></span>Panel</div>
-      <span class="header-sub">Control de gastos en tiempo real</span>
+      <!-- Logomarca -->
+      <div class="logo-mark">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 13h8v1.5H8V13zm0 3h8v1.5H8V16zm0-6h3v1.5H8V10z"/></svg>
+      </div>
+      <h1 class="logo-text">Facturas<span> · </span>Panel</h1>
+      <div class="logo-sep-v"></div>
+      <span class="header-sub">Control de gastos</span>
     </div>
+
     <div class="header-right">
+      <!-- Status WhatsApp -->
       <div class="wa-status">
         <div class="wa-dot" id="waDot"></div>
         <span id="waLabel">WhatsApp</span>
       </div>
-      <div class="wa-status" style="margin-left:4px">
+      <!-- Status socket -->
+      <div class="wa-status">
         <div class="wa-dot" id="sockDot"></div>
         <span id="sockLabel">Panel</span>
       </div>
+
+      <div class="hdr-div"></div>
+
+      <!-- Botones -->
+      <button class="btn btn-primary" onclick="openModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M3 3h7v7H3V3zm2 2v3h3V5H5zm7-2h7v7h-7V3zm2 2v3h3V5h-3zM3 13h7v7H3v-7zm2 2v3h3v-3H5zm13-2h2v2h-2v-2zm0 4h2v2h-2v-2zm-4-4h2v2h-2v-2zm0 4h2v2h-2v-2zm4 4h2v2h-2v-2zm-4 0h2v2h-2v-2z"/>
+        </svg>
+        Enviar factura
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONTENIDO ════════════════════════════════ -->
+<div class="page">
+
+  <!-- Auth Banner (pairing code) -->
+  <div id="authBanner" style="display:none; margin-top:28px; background:#fff; border:1px solid #E2DDD4; border-left:3px solid #C9A84C; border-radius:12px; padding:32px 36px; align-items:center; gap:40px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:220px;">
+      <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:#6B7280;margin-bottom:10px;">Vincular WhatsApp</div>
+      <div style="font-family:'Newsreader','Georgia',serif;font-size:22px;font-weight:300;letter-spacing:-.025em;margin-bottom:12px;color:#1A3A5C;">Conecta el bot en 3 pasos</div>
+      <ol style="font-size:13px;color:#6B7280;line-height:1.9;padding-left:18px;">
+        <li>Abre WhatsApp en tu teléfono</li>
+        <li>Ve a <strong style="color:#1C1C1E">Dispositivos vinculados → Vincular dispositivo</strong></li>
+        <li>Toca <strong style="color:#1C1C1E">"Vincular con número de teléfono"</strong> e ingresa el código</li>
+      </ol>
+    </div>
+    <div style="flex-shrink:0; text-align:center;">
+      <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:#6B7280;margin-bottom:12px;">Tu código</div>
+      <div id="pairingCode">—</div>
+      <div style="font-size:11px;color:#A8A29E;margin-top:10px;">Válido por 60 s — se renueva automáticamente</div>
+    </div>
+  </div>
+
+  <!-- Barra de filtros -->
+  <div class="filter-bar">
+    <div class="filter-bar-row">
+      <button class="filter-btn" data-period="today" onclick="setQuickFilter('today', this)">Hoy</button>
+      <button class="filter-btn" data-period="yesterday" onclick="setQuickFilter('yesterday', this)">Ayer</button>
+      <button class="filter-btn" data-period="week" onclick="setQuickFilter('week', this)">Esta semana</button>
+      <button class="filter-btn" data-period="all" onclick="setQuickFilter('all', this)">Todo</button>
+    </div>
+    <div class="filter-bar-row">
+      <label class="filter-label" for="dateFrom">Fecha desde</label>
+      <input type="date" id="dateFrom" class="date-input" onchange="onDateRangeChange()">
+      <label class="filter-label" for="dateTo">Fecha hasta</label>
+      <input type="date" id="dateTo" class="date-input" onchange="onDateRangeChange()">
       <button class="btn" onclick="exportExcel()" id="btnExport">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
           <polyline points="7 10 12 15 17 10"/>
           <line x1="12" y1="15" x2="12" y2="3"/>
         </svg>
         Exportar Excel
       </button>
-      <button class="btn btn-dark" onclick="openModal()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M3 3h7v7H3V3zm2 2v3h3V5H5zm7-2h7v7h-7V3zm2 2v3h3V5h-3zM3 13h7v7H3v-7zm2 2v3h3v-3H5zm13-2h2v2h-2v-2zm0 4h2v2h-2v-2zm-4-4h2v2h-2v-2zm0 4h2v2h-2v-2zm4 4h2v2h-2v-2zm-4 0h2v2h-2v-2z"/>
-        </svg>
-        Enviar factura
-      </button>
-    </div>
-  </header>
-
-  <!-- Pairing code banner (visible while WhatsApp is not linked) -->
-  <div id="authBanner" style="display:none; margin-top:28px; background:#fff; border:1px solid #EAEAEA; border-radius:12px; padding:36px; align-items:center; gap:40px; flex-wrap:wrap;">
-    <div style="flex:1; min-width:220px;">
-      <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:#787774;margin-bottom:10px;">Vincular WhatsApp</div>
-      <div style="font-family:'Newsreader','Georgia',serif;font-size:22px;font-weight:300;letter-spacing:-.025em;margin-bottom:12px;">Conecta el bot en 3 pasos</div>
-      <ol style="font-size:13px;color:#787774;line-height:1.9;padding-left:18px;">
-        <li>Abre WhatsApp en tu teléfono</li>
-        <li>Ve a <strong style="color:#111">Dispositivos vinculados → Vincular dispositivo</strong></li>
-        <li>Toca <strong style="color:#111">"Vincular con número de teléfono"</strong> e ingresa el código</li>
-      </ol>
-    </div>
-    <div style="flex-shrink:0; text-align:center;">
-      <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.09em;color:#787774;margin-bottom:12px;">Tu código</div>
-      <div id="pairingCode" style="font-family:'Geist Mono','SF Mono',monospace;font-size:40px;font-weight:500;letter-spacing:.12em;color:#111;background:#F7F6F3;border:1px solid #EAEAEA;border-radius:10px;padding:20px 32px;min-width:220px;display:inline-block;">—</div>
-      <div style="font-size:11px;color:#B0ADA8;margin-top:10px;">Válido por 60 segundos — se renueva automáticamente</div>
     </div>
   </div>
 
@@ -491,58 +883,105 @@
       <h2 class="section-title">Facturas recientes</h2>
       <span class="section-meta" id="lastUpdate">—</span>
     </div>
-    <div class="filter-bar">
-      <div class="filter-group">
-        <label class="filter-label" for="filterFrom">Desde</label>
-        <input class="filter-input" type="date" id="filterFrom" onchange="applyFilter()">
-      </div>
-      <div class="filter-group">
-        <label class="filter-label" for="filterTo">Hasta</label>
-        <input class="filter-input" type="date" id="filterTo" onchange="applyFilter()">
-      </div>
-      <button class="btn" id="filterClear" onclick="clearFilter()" style="display:none">Limpiar filtro</button>
-      <span class="filter-count" id="filterCount" style="display:none"></span>
+    <div id="filters">
+      <label class="sr-only" for="filterCat">Filtrar por categoría</label>
+      <select id="filterCat">
+        <option value="">Todas las categorías</option>
+        <option value="alimentacion">Alimentación</option>
+        <option value="transporte">Transporte</option>
+        <option value="oficina">Oficina</option>
+        <option value="servicios">Servicios</option>
+        <option value="tecnologia">Tecnología</option>
+        <option value="salud">Salud</option>
+        <option value="otro">Otro</option>
+      </select>
+      <label class="sr-only" for="filterProv">Buscar por proveedor</label>
+      <input id="filterProv" type="search" placeholder="Buscar proveedor…">
+      <button class="btn" onclick="clearFilters()">Limpiar</button>
     </div>
-    <div class="table-wrap" id="tableWrap"></div>
+    <div class="table-wrap" id="tableWrap">
+      <div class="skeleton-wrap" aria-label="Cargando facturas…" role="status">
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+      </div>
+    </div>
+    <div id="paginationBar"></div>
   </div>
 
 </div>
 
 <!-- QR Modal -->
-<div class="overlay" id="overlay">
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
     <button class="modal-close" onclick="closeModal()" aria-label="Cerrar">&times;</button>
-    <h3 class="modal-title">Enviar factura</h3>
+    <h3 class="modal-title" id="modalTitle">Enviar factura</h3>
     <p class="modal-sub">Escanea el código QR con tu teléfono para abrir la conversación con el bot de WhatsApp.</p>
     <img class="modal-qr" id="modalQr" src="" alt="WhatsApp QR" style="display:none">
     <div class="modal-phone" id="modalPhone"></div>
     <div id="modalNoPhone" class="modal-no-phone" style="display:none">
       Configura <code>WHATSAPP_PHONE</code> en el archivo <code>.env</code> para generar este QR.
     </div>
-    <a id="modalLink" href="#" target="_blank" rel="noopener" class="btn btn-dark" style="display:none;width:100%;justify-content:center;">
+    <a id="modalLink" href="#" target="_blank" rel="noopener" class="btn btn-primary" style="display:none;width:100%;justify-content:center;text-decoration:none;">
       Abrir WhatsApp
     </a>
   </div>
 </div>
 
 <!-- Lightbox -->
-<div id="lightbox" onclick="closeLightbox()">
+<div id="lightbox" onclick="closeLightbox()" role="dialog" aria-modal="true" aria-label="Visor de factura">
   <button id="lightboxClose" onclick="closeLightbox()" aria-label="Cerrar">&times;</button>
   <img id="lightboxImg" src="" alt="Factura" onclick="event.stopPropagation()">
 </div>
 
 <!-- Toasts -->
-<div id="toasts"></div>
+<div id="toasts" aria-live="polite" role="status"></div>
 
+<!-- Confirm Dialog -->
+<div class="overlay" id="confirmOverlay" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMsg">
+  <div class="modal" style="max-width:320px">
+    <h3 class="modal-title" id="confirmTitle">¿Confirmar?</h3>
+    <p class="modal-sub" id="confirmMsg"></p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:8px">
+      <button class="btn" onclick="closeConfirm(false)">Cancelar</button>
+      <button class="btn btn-danger" onclick="closeConfirm(true)">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk bar -->
+<div class="bulk-bar" id="bulkBar">
+  <div class="bulk-info">
+    <strong id="bulkCount">0</strong><span id="bulkLabel">facturas seleccionadas</span>
+  </div>
+  <div class="bulk-actions">
+    <button class="btn" onclick="clearSelection()">Cancelar selección</button>
+    <button class="btn btn-danger" id="btnDeleteSelected" onclick="deleteSelected()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+        <path d="M10 11v6M14 11v6"/>
+      </svg>
+      Eliminar seleccionadas
+    </button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
   /* ─── State ─── */
   let expenses = []
+  let dateFrom = (() => { const d = new Date(); d.setDate(d.getDate() - 6); return d.toISOString().split('T')[0] })()
+  let dateTo   = new Date().toISOString().split('T')[0]
+  let currentPage = 1
+  const PAGE_SIZE = 10
 
   /* ─── Socket ─── */
   const socket = io()
 
-  socket.on('connect', () => setStatus('sock', true))
+  socket.on('connect',    () => setStatus('sock', true))
   socket.on('disconnect', () => setStatus('sock', false))
 
   socket.on('wa-status', (on) => {
@@ -555,47 +994,45 @@
     document.getElementById('authBanner').style.display = 'flex'
   })
 
-  socket.on('init', ({ expenses: list, stats }) => {
+  socket.on('init', ({ expenses: list }) => {
     expenses = list
-    renderTable(expenses)
-    updateStats(stats)
+    currentPage = 1
+    render()
   })
 
-  socket.on('new-expense', ({ expense, stats }) => {
-    expenses.unshift(expense)
-    if (isFilterActive()) {
-      applyFilter()
+  socket.on('delete-expense', ({ id }) => {
+    expenses = expenses.filter(e => e.id !== id)
+    const tr = document.querySelector(`tr[data-id="${id}"]`)
+    if (tr) {
+      tr.style.transition = 'opacity 0.25s'
+      tr.style.opacity = '0'
+      setTimeout(() => {
+        tr.remove()
+        updateBulkBar()
+        render()
+      }, 250)
     } else {
-      prependRow(expense)
+      render()
     }
-    updateStats(stats)
+  })
+
+  socket.on('expense-updated', ({ expense }) => {
+    const idx = expenses.findIndex(e => e.id === expense.id)
+    if (idx !== -1) expenses[idx] = expense
+    updateStats(calcStats(getCurrentFiltered()))
+  })
+
+  socket.on('new-expense', ({ expense }) => {
+    expenses.unshift(expense)
+    currentPage = 1
+    render()
     showToast(expense)
     document.getElementById('lastUpdate').textContent = 'Actualizado: ' + fmtTime(new Date().toISOString())
   })
 
-  socket.on('delete-expense', ({ id, stats }) => {
-    expenses = expenses.filter(e => e.id !== id)
-    if (isFilterActive()) {
-      applyFilter()
-    } else {
-      removeRow(id)
-    }
-    updateStats(stats)
-  })
-
-  socket.on('update-expense', ({ id, descripcion }) => {
-    const e = expenses.find(e => e.id === id)
-    if (e) e.descripcion = descripcion
-    const td = document.querySelector(`tr[data-id="${id}"] .td-desc`)
-    if (td && !td.querySelector('input')) {
-      td.textContent = descripcion || '—'
-      td.title = descripcion || ''
-    }
-  })
-
   /* ─── Status dots ─── */
   function setStatus(which, on) {
-    const dot   = document.getElementById(which === 'wa' ? 'waDot' : 'sockDot')
+    const dot   = document.getElementById(which === 'wa' ? 'waDot'   : 'sockDot')
     const label = document.getElementById(which === 'wa' ? 'waLabel' : 'sockLabel')
     dot.className = 'wa-dot ' + (on ? 'on' : 'off')
     label.textContent = which === 'wa'
@@ -605,32 +1042,31 @@
 
   /* ─── Stats ─── */
   function updateStats(s) {
-    document.getElementById('sTotal').textContent   = fmtAmt(s.total)
-    document.getElementById('sCount').textContent   = s.count
+    document.getElementById('sTotal').textContent    = fmtAmt(s.total)
+    document.getElementById('sCount').textContent    = s.count
     document.getElementById('sCountSub').textContent = s.count === 1 ? 'documento' : 'documentos'
-    document.getElementById('sAvg').textContent     = fmtAmt(s.average)
+    document.getElementById('sAvg').textContent      = fmtAmt(s.average)
     document.getElementById('lastUpdate').textContent = 'Última actualización: ' + fmtTime(s.lastUpdated)
   }
 
   /* ─── Table ─── */
   function renderTable(list) {
     const wrap = document.getElementById('tableWrap')
-    if (!list || list.length === 0) {
-      wrap.innerHTML = emptyHTML()
-      return
-    }
-    const table = document.createElement('table')
+    if (!list || list.length === 0) { wrap.innerHTML = emptyHTML(); return }
+    const table  = document.createElement('table')
     table.innerHTML = theadHTML()
-    const tbody = document.createElement('tbody')
+    const tbody  = document.createElement('tbody')
     tbody.id = 'expBody'
     list.forEach(e => tbody.appendChild(buildRow(e)))
     table.appendChild(tbody)
     wrap.innerHTML = ''
     wrap.appendChild(table)
+    updateBulkBar()
   }
 
   function theadHTML() {
     return `<thead><tr>
+      <th class="td-check"><input type="checkbox" id="cbAll" class="cb-row" onchange="toggleSelectAll(this)"></th>
       <th style="width:48px"></th>
       <th>Proveedor</th>
       <th>No. Factura</th>
@@ -638,8 +1074,8 @@
       <th class="r">Total</th>
       <th class="r">IVA</th>
       <th>Categoría</th>
-      <th style="text-align:left">Descripción</th>
-      <th style="width:72px"></th>
+      <th>Descripción</th>
+      <th style="width:48px"></th>
     </tr></thead>`
   }
 
@@ -663,28 +1099,31 @@
     const tr  = document.createElement('tr')
     tr.dataset.id = e.id
     tr.innerHTML = `
+      <td class="td-check"><input type="checkbox" class="cb-row" data-id="${esc(e.id)}" onchange="onRowCheckChange()"></td>
       ${thumbHTML(e)}
-      <td class="td-name">${esc(e.proveedor || '—')}</td>
+      <td class="td-name td-editable" contenteditable="true"
+          data-id="${esc(e.id)}" data-field="proveedor">${esc(e.proveedor || '')}</td>
       <td class="td-folio">${esc(e.numero_factura || '—')}</td>
       <td class="td-date">${e.fecha || '—'}</td>
       <td class="td-amt">${esc(cur)} ${fmtAmt(e.total)}</td>
       <td class="td-tax">${fmtAmt(e.iva)}</td>
-      <td><span class="badge b-${cat}">${cap(cat)}</span></td>
-      <td
-        class="td-desc"
-        onclick="toggleDesc(this)"
-        data-full="${(e.descripcion || '—').replace(/"/g, '&quot;')}"
-        title="${(e.descripcion || '—').replace(/"/g, '&quot;')}"
-      >${e.descripcion || '—'}</td>
-      <td style="text-align:center; vertical-align:middle; padding:0 12px; white-space:nowrap;">
-        ${e.imageFile && e.imageFile.endsWith('.pdf') ? `<a class="btn-dl" href="/uploads/${esc(e.imageFile)}" download="${esc(e.imageFile)}" title="Descargar PDF">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-        </a>` : ''}
-        <button class="btn-del" onclick="deleteExpense('${esc(e.id)}')" title="Eliminar factura">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14a2,2,0,0,1-2,2H8a2,2,0,0,1-2-2L5,6"/><path d="M10,11v6"/><path d="M14,11v6"/><path d="M9,6V4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1v2"/>
+      <td>
+        <select class="badge b-${cat} badge-select" data-id="${esc(e.id)}">
+          ${['alimentacion','transporte','oficina','servicios','tecnologia','salud','otro']
+            .map(c => `<option value="${c}" ${c === cat ? 'selected' : ''}>${cap(c)}</option>`)
+            .join('')}
+        </select>
+      </td>
+      <td class="td-desc td-editable" contenteditable="true"
+          data-id="${esc(e.id)}" data-field="descripcion"
+          title="${esc(e.descripcion || '')}">${esc(e.descripcion || '—')}</td>
+      <td class="td-del">
+        <button class="btn-delete" onclick="deleteExpense('${esc(e.id)}', this)" title="Eliminar factura" aria-label="Eliminar factura">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+            <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
           </svg>
         </button>
       </td>
@@ -703,80 +1142,6 @@
     const tr = buildRow(expense)
     tr.classList.add('row-new')
     body.prepend(tr)
-  }
-
-  /* ─── Toggle description expand ─── */
-  function toggleDesc(el) {
-    el.classList.toggle('expanded')
-    el.title = el.classList.contains('expanded') ? '' : el.dataset.full
-  }
-
-  /* ─── Edit description ─── */
-  function editDesc(td, id) {
-    if (td.querySelector('input')) return
-    const prev = td.textContent.trim() === '—' ? '' : td.textContent.trim()
-    td.textContent = ''
-    const input = document.createElement('input')
-    input.className = 'desc-input'
-    input.value = prev
-    input.maxLength = 120
-    td.appendChild(input)
-    input.focus()
-    input.select()
-
-    let saved = false
-    async function save() {
-      if (saved) return
-      saved = true
-      const val = input.value.trim()
-      if (val === prev) { td.textContent = prev || '—'; td.title = prev; return }
-      td.textContent = val || '—'
-      td.title = val
-      try {
-        await fetch(`/api/expenses/${id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ descripcion: val })
-        })
-        const e = expenses.find(e => e.id === id)
-        if (e) e.descripcion = val
-      } catch {
-        td.textContent = prev || '—'
-        td.title = prev
-      }
-    }
-
-    input.addEventListener('blur', save)
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') { input.blur() }
-      if (e.key === 'Escape') { saved = true; td.textContent = prev || '—'; td.title = prev }
-    })
-  }
-
-  /* ─── Delete expense ─── */
-  async function deleteExpense(id) {
-    if (!confirm('¿Eliminar esta factura? Esta acción no se puede deshacer.')) return
-    try {
-      const r = await fetch(`/api/expenses/${id}`, { method: 'DELETE' })
-      if (!r.ok) throw new Error()
-      removeRow(id)
-    } catch {
-      alert('No se pudo eliminar la factura.')
-    }
-  }
-
-  function removeRow(id) {
-    const tr = document.querySelector(`tr[data-id="${id}"]`)
-    if (tr) {
-      tr.style.transition = 'opacity 0.25s'
-      tr.style.opacity = '0'
-      setTimeout(() => {
-        tr.remove()
-        if (!document.getElementById('expBody')?.querySelector('tr')) {
-          document.getElementById('tableWrap').innerHTML = emptyHTML()
-        }
-      }, 250)
-    }
   }
 
   function emptyHTML() {
@@ -805,7 +1170,7 @@
       <div class="toast-body">${esc(e.proveedor || 'Sin nombre')} &mdash; ${esc(cur)} ${fmtAmt(e.total)}</div>
     `
     document.getElementById('toasts').appendChild(d)
-    setTimeout(() => d.remove(), 5500)
+    setTimeout(() => d.remove(), 4500)
   }
 
   /* ─── QR Modal ─── */
@@ -834,25 +1199,40 @@
   }
 
   function closeModal() { document.getElementById('overlay').classList.remove('open') }
-  document.getElementById('overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal() })
+  document.getElementById('overlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal()
+  })
 
   /* ─── Export ─── */
-  async function exportExcel() {
+  function exportExcel() {
     const btn = document.getElementById('btnExport')
     btn.disabled = true
     btn.textContent = 'Generando...'
     try {
-      const a = document.createElement('a')
-      a.href = '/api/export'
-      a.download = ''
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
+      const rows = getCurrentFiltered().map(e => ({
+        'Proveedor':   e.proveedor      || '',
+        'No. Factura': e.numero_factura || '',
+        'Fecha':       e.fecha          || '',
+        'Total':       Number(e.total)  || 0,
+        'Subtotal':    Number(e.subtotal)|| 0,
+        'IVA':         Number(e.iva)    || 0,
+        'Moneda':      e.moneda         || 'USD',
+        'Categoría':   e.categoria      || '',
+        'Descripción': e.descripcion    || '',
+        'Imagen':      e.imageFile      || '',
+        'Registrado':  e.createdAt      || ''
+      }))
+      const ws = XLSX.utils.json_to_sheet(rows)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, 'Facturas')
+      const from = dateFrom || 'inicio'
+      const to   = dateTo   || new Date().toISOString().split('T')[0]
+      XLSX.writeFile(wb, `facturas_${from}_${to}.xlsx`)
     } finally {
       setTimeout(() => {
         btn.disabled = false
-        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Exportar Excel`
-      }, 1500)
+        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Exportar Excel`
+      }, 1000)
     }
   }
 
@@ -863,44 +1243,255 @@
   }
   function closeLightbox() { document.getElementById('lightbox').classList.remove('open') }
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { closeModal(); closeLightbox() }
+    if (e.key === 'Escape') { closeModal(); closeLightbox(); closeConfirm(false) }
   })
 
-  /* ─── Date filter ─── */
-  function isFilterActive() {
-    return !!(document.getElementById('filterFrom').value || document.getElementById('filterTo').value)
+  /* ─── Confirm dialog ─── */
+  let _confirmResolve = null
+
+  function showConfirm(title, msg) {
+    document.getElementById('confirmTitle').textContent = title || '¿Confirmar?'
+    document.getElementById('confirmMsg').textContent   = msg   || ''
+    document.getElementById('confirmOverlay').classList.add('open')
+    return new Promise(res => { _confirmResolve = res })
   }
 
-  function applyFilter() {
-    const from = document.getElementById('filterFrom').value
-    const to   = document.getElementById('filterTo').value
-    const active = from || to
+  function closeConfirm(ok) {
+    document.getElementById('confirmOverlay').classList.remove('open')
+    if (_confirmResolve) { _confirmResolve(!!ok); _confirmResolve = null }
+  }
 
-    document.getElementById('filterClear').style.display = active ? 'inline-flex' : 'none'
+  document.getElementById('confirmOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeConfirm(false)
+  })
 
-    const filtered = expenses.filter(e => {
-      const d = e.fecha || ''
+  /* ─── Delete ─── */
+  async function deleteExpense(id, btn) {
+    const ok = await showConfirm('¿Eliminar factura?', 'Esta acción no se puede deshacer.')
+    if (!ok) return
+    btn.disabled = true
+    try {
+      const r = await fetch(`/api/expenses/${id}`, { method: 'DELETE' })
+      if (!r.ok) throw new Error('Error')
+    } catch {
+      btn.disabled = false
+    }
+  }
+
+  /* ─── Multi-select ─── */
+  function onRowCheckChange() { updateBulkBar() }
+
+  function toggleSelectAll(cb) {
+    document.querySelectorAll('tbody .cb-row').forEach(c => { c.checked = cb.checked })
+    updateBulkBar()
+  }
+
+  function updateBulkBar() {
+    const allCbs = document.querySelectorAll('tbody .cb-row')
+    const checked = [...document.querySelectorAll('tbody .cb-row:checked')]
+    const n = checked.length
+    document.getElementById('bulkCount').textContent = n
+    document.getElementById('bulkLabel').textContent = n === 1 ? ' factura seleccionada' : ' facturas seleccionadas'
+    document.getElementById('bulkBar').classList.toggle('visible', n > 0)
+    const cbAll = document.getElementById('cbAll')
+    if (cbAll) {
+      cbAll.indeterminate = n > 0 && n < allCbs.length
+      cbAll.checked = allCbs.length > 0 && n === allCbs.length
+    }
+  }
+
+  function clearSelection() {
+    document.querySelectorAll('tbody .cb-row').forEach(c => { c.checked = false })
+    updateBulkBar()
+  }
+
+  async function deleteSelected() {
+    const checked = [...document.querySelectorAll('tbody .cb-row:checked')]
+    if (!checked.length) return
+    const n  = checked.length
+    const ok = await showConfirm(
+      `¿Eliminar ${n} ${n === 1 ? 'factura' : 'facturas'}?`,
+      'Esta acción no se puede deshacer.'
+    )
+    if (!ok) return
+    const btn = document.getElementById('btnDeleteSelected')
+    btn.disabled = true
+    const ids = checked.map(c => c.dataset.id)
+    await Promise.all(ids.map(id =>
+      fetch(`/api/expenses/${id}`, { method: 'DELETE' }).catch(() => null)
+    ))
+    btn.disabled = false
+  }
+
+  /* ─── Filtros ─── */
+  function filterExpenses(list, from, to) {
+    if (!from && !to) return list
+    return list.filter(e => {
+      const d = e.fecha || e.createdAt?.slice(0,10)
+      if (!d) return false
       if (from && d < from) return false
       if (to   && d > to)   return false
       return true
     })
+  }
 
-    const countEl = document.getElementById('filterCount')
-    if (active) {
-      countEl.textContent = filtered.length + ' de ' + expenses.length + ' facturas'
-      countEl.style.display = 'inline'
+  function calcStats(list) {
+    const count = list.length
+    const total = list.reduce((s, e) => s + (Number(e.total) || 0), 0)
+    const average = count > 0 ? total / count : 0
+    const lastUpdated = list.reduce((latest, e) => {
+      const d = e.createdAt || ''
+      return d > latest ? d : latest
+    }, null)
+    return { total, count, average, lastUpdated }
+  }
+
+  function getCurrentFiltered() {
+    const cat  = document.getElementById('filterCat').value.toLowerCase()
+    const prov = document.getElementById('filterProv').value.toLowerCase().trim()
+    return filterExpenses(expenses, dateFrom, dateTo).filter(e => {
+      const matchCat  = !cat  || (e.categoria || '').toLowerCase() === cat
+      const matchProv = !prov || (e.proveedor  || '').toLowerCase().includes(prov)
+      return matchCat && matchProv
+    })
+  }
+
+  function setQuickFilter(period, btn) {
+    const today = new Date()
+    const todayStr = today.toISOString().split('T')[0]
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+    if (period === 'today') {
+      dateFrom = todayStr; dateTo = todayStr
+    } else if (period === 'yesterday') {
+      const d = new Date(today); d.setDate(d.getDate() - 1)
+      dateFrom = d.toISOString().split('T')[0]; dateTo = dateFrom
+    } else if (period === 'week') {
+      const day = today.getDay()
+      const monday = new Date(today); monday.setDate(today.getDate() + (day === 0 ? -6 : 1 - day))
+      dateFrom = monday.toISOString().split('T')[0]; dateTo = todayStr
     } else {
-      countEl.style.display = 'none'
+      dateFrom = ''; dateTo = ''
     }
-
-    renderTable(filtered)
+    document.getElementById('dateFrom').value = dateFrom
+    document.getElementById('dateTo').value   = dateTo
+    applyFilters()
   }
 
-  function clearFilter() {
-    document.getElementById('filterFrom').value = ''
-    document.getElementById('filterTo').value   = ''
-    applyFilter()
+  function onDateRangeChange() {
+    dateFrom = document.getElementById('dateFrom').value
+    dateTo   = document.getElementById('dateTo').value
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+    applyFilters()
   }
+
+  /* ─── Render (orquestador principal) ─── */
+  function paginateExpenses(filteredExpenses, page, pageSize) {
+    const start = (page - 1) * pageSize
+    return filteredExpenses.slice(start, start + pageSize)
+  }
+
+  function getPageNumbers(current, total) {
+    if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1)
+    if (current <= 3) return [1, 2, 3, 4, '...', total]
+    if (current >= total - 2) return [1, '...', total - 3, total - 2, total - 1, total]
+    return [1, '...', current - 1, current, current + 1, '...', total]
+  }
+
+  function renderPagination(total, page, pageSize) {
+    const bar = document.getElementById('paginationBar')
+    if (total <= pageSize) { bar.innerHTML = ''; return }
+    const totalPages = Math.ceil(total / pageSize)
+    const from = (page - 1) * pageSize + 1
+    const to   = Math.min(page * pageSize, total)
+    const pages = getPageNumbers(page, totalPages)
+    bar.innerHTML = `
+      <div class="pagination-bar">
+        <div class="pagination-info" aria-live="polite" aria-atomic="true">Mostrando del ${from} al ${to} de ${total} resultados</div>
+        <nav class="pagination-controls" role="navigation" aria-label="Paginación de facturas">
+          <button class="page-btn" onclick="goToPage(${page - 1})" ${page === 1 ? 'disabled' : ''} aria-label="Anterior">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          ${pages.map(p => p === '...'
+            ? `<span class="page-ellipsis">…</span>`
+            : `<button class="page-btn${p === page ? ' active' : ''}" onclick="goToPage(${p})">${p}</button>`
+          ).join('')}
+          <button class="page-btn" onclick="goToPage(${page + 1})" ${page === totalPages ? 'disabled' : ''} aria-label="Siguiente">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </nav>
+      </div>
+    `
+  }
+
+  function goToPage(page) {
+    currentPage = page
+    render()
+  }
+
+  function render() {
+    const filtered  = getCurrentFiltered()
+    const paginated = paginateExpenses(filtered, currentPage, PAGE_SIZE)
+    renderTable(paginated)
+    renderPagination(filtered.length, currentPage, PAGE_SIZE)
+    updateStats(calcStats(filtered))
+  }
+
+  function applyFilters() {
+    currentPage = 1
+    render()
+  }
+
+  function clearFilters() {
+    document.getElementById('filterCat').value  = ''
+    document.getElementById('filterProv').value = ''
+    applyFilters()
+  }
+
+  // Inicializar inputs con el rango por defecto (últimos 7 días)
+  document.getElementById('dateFrom').value = dateFrom
+  document.getElementById('dateTo').value   = dateTo
+
+  document.getElementById('filterCat').addEventListener('change', applyFilters)
+  document.getElementById('filterProv').addEventListener('input', applyFilters)
+
+  /* ─── Edición inline ─── */
+  async function patchExpense(id, fields) {
+    try {
+      const res = await fetch(`/api/expenses/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fields)
+      })
+      if (!res.ok) throw new Error('error')
+    } catch {
+      showToast({ proveedor: '⚠ Error al guardar' })
+    }
+  }
+
+  // Guarda el valor original al entrar, para no PATCH si no hubo cambio
+  document.addEventListener('focus', (ev) => {
+    const el = ev.target.closest('[data-field]')
+    if (!el || !el.isContentEditable) return
+    el.dataset.original = el.textContent.trim()
+  }, true)
+
+  document.addEventListener('blur', async (ev) => {
+    const el = ev.target.closest('[data-field]')
+    if (!el || !el.isContentEditable) return
+    const value = el.textContent.trim()
+    if (value === el.dataset.original) return
+    await patchExpense(el.dataset.id, { [el.dataset.field]: value })
+  }, true)
+
+  // change en select de categoría → PATCH inmediato
+  document.addEventListener('change', async (ev) => {
+    const el = ev.target.closest('.badge-select')
+    if (!el) return
+    el.classList.remove(...[...el.classList].filter(c => c.startsWith('b-')))
+    el.classList.add(`b-${el.value}`)
+    await patchExpense(el.dataset.id, { categoria: el.value })
+  })
 
   /* ─── Helpers ─── */
   function fmtAmt(n) {

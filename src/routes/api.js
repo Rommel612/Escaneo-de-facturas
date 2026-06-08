@@ -48,13 +48,12 @@ export function registerRoutes(app, io) {
     res.send(buf)
   })
 
-  app.patch('/api/expenses/:id', (req, res) => {
-    const { descripcion } = req.body
-    if (typeof descripcion !== 'string') return res.status(400).json({ error: 'Invalid field' })
-    const updated = updateExpense(req.params.id, { descripcion: descripcion.trim() })
+  app.patch('/api/expenses/:id', async (req, res) => {
+    const { proveedor, descripcion, categoria } = req.body
+    const updated = await updateExpense(req.params.id, { proveedor, descripcion, categoria })
     if (!updated) return res.status(404).json({ error: 'Not found' })
-    io.emit('update-expense', { id: req.params.id, descripcion: updated.descripcion })
-    res.json({ ok: true })
+    io.emit('expense-updated', { expense: updated, stats: getStats() })
+    res.json(updated)
   })
 
   app.delete('/api/expenses/:id', (req, res) => {

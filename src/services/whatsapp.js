@@ -12,6 +12,19 @@ export const waEvents = new EventEmitter()
 let sockInstance = null
 let pairingRequested = false
 
+// El bot SOLO atiende chats individuales. Cualquier grupo, comunidad, lista de
+// difusión, status o canal queda completamente ignorado. Los JIDs de grupo de
+// WhatsApp siempre terminan en @g.us (incluidas las comunidades); difusión y
+// status en @broadcast; los canales en @newsletter.
+export function isGroupOrNonIndividual(jid) {
+  if (!jid || typeof jid !== 'string') return true
+  return (
+    jid.endsWith('@g.us') ||        // grupos y comunidades
+    jid.endsWith('@broadcast') ||   // status y listas de difusión
+    jid.endsWith('@newsletter')     // canales
+  )
+}
+
 export async function connectToWhatsApp() {
   pairingRequested = false
 
@@ -75,25 +88,57 @@ export async function connectToWhatsApp() {
 
   sock.ev.on('messages.upsert', async ({ messages, type }) => {
     if (type !== 'notify') return
+    if (!process.env.BOT_ENABLED || process.env.BOT_ENABLED === 'false') return  // deshabilitado temporalmente
 
     for (const m of messages) {
-      const msgType = Object.keys(m.message || {})[0]
-      const isMedia = msgType === 'imageMessage' || msgType === 'documentMessage'
-
-      // Skip own text messages (bot responses), but process own media (self-sent invoices)
-      if (m.key.fromMe && !isMedia) continue
-
       const from = m.key.remoteJid
+      const msgType = Object.keys(m.message || {})[0]
+      console.log(`[MSG] from=${from} fromMe=${m.key.fromMe} participant=${m.key.participant ?? '-'} type=${msgType}`)
 
-      if (isMedia) {
-        await handleInvoice(sock, m, from, msgType, (expense) => waEvents.emit('expense', expense))
-      } else if (msgType === 'conversation' || msgType === 'extendedTextMessage') {
-        const text = (m.message?.conversation || m.message?.extendedTextMessage?.text || '').toLowerCase().trim()
-        if (text === 'ayuda' || text === 'help') {
-          await sock.sendMessage(from, { text: buildHelpMsg() })
-        } else if (text === 'resumen') {
-          await sock.sendMessage(from, { text: buildSummaryMsg() })
+      // Ignorar por completo grupos/comunidades/difusión/status/canales.
+      // Los JIDs de grupo siempre terminan en @g.us, así que el filtro de
+      // sufijo los cubre al 100%. En chats individuales se procesan tanto tus
+      // propios mensajes (fromMe) como los de la otra persona.
+      if (isGroupOrNonIndividual(from)) {
+        console.log(`[SKIP] no-individual: ${from}`)
+        continue
+      }
+
+      const text = (m.message?.conversation || m.message?.extendedTextMessage?.text || '').trim()
+      console.log(`[TEXT] "${text}" (hex: ${Buffer.from(text).toString('hex')})`)
+
+      if (text === '!fac') {
+        const contextInfo = m.message?.extendedTextMessage?.contextInfo
+        const quotedMessage = contextInfo?.quotedMessage
+        console.log('[FAC] contextInfo keys:', Object.keys(contextInfo || {}))
+        console.log('[FAC] quotedMessage keys:', Object.keys(quotedMessage || {}))
+
+        if (!quotedMessage) {
+          await sock.sendMessage(from, { text: 'Responde a una foto o PDF con *!fac* para registrarlo como factura.' })
+          continue
         }
+
+        const quotedType = Object.keys(quotedMessage)[0]
+        console.log('[FAC] quotedType:', quotedType)
+        if (quotedType !== 'imageMessage' && quotedType !== 'documentMessage') {
+          await sock.sendMessage(from, { text: 'El mensaje citado no es una imagen ni un PDF.' })
+          continue
+        }
+
+        const quotedMsg = {
+          key: {
+            remoteJid: from,
+            id: contextInfo.stanzaId,
+            participant: contextInfo.participant
+          },
+          message: quotedMessage
+        }
+        console.log('[FAC] calling handleInvoice, stanzaId:', contextInfo.stanzaId)
+        await handleInvoice(sock, quotedMsg, from, quotedType, (expense) => waEvents.emit('expense', expense))
+      } else if (text.toLowerCase() === '!help') {
+        await sock.sendMessage(from, { text: buildHelpMsg() })
+      } else if (text.toLowerCase() === '!res') {
+        await sock.sendMessage(from, { text: buildSummaryMsg() })
       }
     }
   })
