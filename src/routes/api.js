@@ -3,7 +3,7 @@ import xlsx from 'xlsx'
 import { readFileSync, writeFileSync, existsSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
-import { getExpenses, getStats, deleteExpense, updateExpense } from '../services/storage.js'
+import { getExpenses, getStats, deleteExpense, updateExpense, clearCategoryFromExpenses } from '../services/storage.js'
 import { WHATSAPP_PHONE } from '../config.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -97,6 +97,18 @@ export function registerRoutes(app, io) {
     cats.push(name)
     saveCategories(cats)
     res.json(cats)
+  })
+
+  app.delete('/api/categories/:nombre', (req, res) => {
+    const nombre = decodeURIComponent(req.params.nombre).trim()
+    const cats = loadCategories()
+    const idx = cats.findIndex(c => c.toLowerCase() === nombre.toLowerCase())
+    if (idx === -1) return res.status(404).json({ error: 'Categoría no encontrada' })
+    cats.splice(idx, 1)
+    saveCategories(cats)
+    const affected = clearCategoryFromExpenses(nombre)
+    io.emit('category-deleted', { nombre, affected })
+    res.json({ ok: true, affected })
   })
 
   app.get('/api/whatsapp-qr', async (_req, res) => {

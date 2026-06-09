@@ -19,6 +19,7 @@
       --gold-light:     #E8C97A;
       --gold-muted:     rgba(201,168,76,0.15);
       --gold-border:    rgba(201,168,76,0.30);
+      --accent-border:  #C8A96A;
 
       /* ── Cuerpo (crema) ── */
       --bg:             #F8F5EE;
@@ -48,6 +49,306 @@
       --c-iess-bg:         #E8F4FD; --c-iess:         #1565C0;
       --c-sueldos-bg:      #E8F8E8; --c-sueldos:      #2E7D32;
       --c-adelantos-bg:    #FFF3E0; --c-adelantos:    #E65100;
+    }
+
+    /* ════════════════════════════════════════
+       MODO OSCURO — sobreescritura de variables
+    ════════════════════════════════════════ */
+    body.dark {
+      --bg:             #000000;
+      --bg-dark:        #161B27;
+      --surface:        #111827;
+      --border:         #1E2D3D;
+      --border-soft:    rgba(59,130,246,0.10);
+
+      --text-1:         #E2E8F0;
+      --text-2:         #4A6785;
+      --text-3:         #2A4A6A;
+      --accent-border:  #1E2D3D;
+
+      /* Navy → azul claro legible sobre fondos oscuros */
+      --navy:           #60A5FA;
+
+      /* Badges oscuros */
+      --c-iess-bg:         #1E3A5C; --c-iess:         #93C5FD;
+      --c-sueldos-bg:      #7F1D1D; --c-sueldos:      #FCA5A5;
+      --c-adelantos-bg:    #78350F; --c-adelantos:    #FDE68A;
+      --c-otro-bg:         #1F2937; --c-otro:         #9CA3AF;
+      --c-servicios-bg:    #2E1065; --c-servicios:    #C4B5FD;
+      --c-tecnologia-bg:   #0C4A6E; --c-tecnologia:   #BAE6FD;
+      --c-alimentacion-bg: #1A2E05; --c-alimentacion: #BEF264;
+      --c-transporte-bg:   #0C2A4A; --c-transporte:   #7EB8F7;
+      --c-salud-bg:        #064E3B; --c-salud:        #6EE7B7;
+      --c-oficina-bg:      #4C0519; --c-oficina:      #FDA4AF;
+    }
+
+    /* Acento izquierdo de stat-card → azul en oscuro */
+    body.dark .stat-card::before {
+      background: linear-gradient(180deg, #7EB8F7 0%, transparent 100%);
+    }
+    body.dark .stat-card:hover {
+      box-shadow: 0 4px 20px rgba(59,130,246,0.12);
+    }
+
+    /* Thead más oscuro que la superficie */
+    body.dark thead th { background: #0D1825; color: #5A84A8; }
+
+    /* Texto blanco en columnas Fecha, Descripción y Banco */
+    body.dark .td-date,
+    body.dark .td-desc,
+    body.dark .bank-select {
+      color: #FFFFFF;
+    }
+
+    /* Totales — acento azul con glow (elemento signature) */
+    body.dark .td-amt {
+      color: var(--navy);
+      font-weight: 600;
+      text-shadow: 0 0 20px rgba(147,197,253,0.22);
+    }
+
+    /* Textarea inline sobre fondo oscuro */
+    body.dark .desc-textarea {
+      background: #161B27;
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.10);
+    }
+
+    /* Auth banner (inline styles → !important para vencer especificidad) */
+    body.dark #authBanner {
+      background: var(--surface) !important;
+      border-color: var(--border) !important;
+    }
+
+    /* Thumbnail PDF */
+    body.dark .thumb-pdf { background: var(--c-oficina-bg); }
+
+    /* Options de selects siempre legibles */
+    body.dark .badge-select option,
+    body.dark .bank-select option {
+      background-color: #111827 !important;
+      color: #E2E8F0 !important;
+    }
+
+    /* Botón eliminar — hover suave en modo oscuro */
+    body.dark .btn-delete {
+      color: #4A6785;
+    }
+    body.dark .btn-delete:hover {
+      color: #FCA5A5;
+      background: rgba(127,29,29,0.30);
+      border-color: #7F1D1D;
+    }
+
+    /* Header — eliminar línea dorada en modo oscuro */
+    body.dark .header-shell {
+      border-bottom-color: #1E2D3D;
+    }
+    body.dark .header-shell::after {
+      background: var(--accent-border);
+      opacity: 0.35;
+    }
+
+    /* Botón primario en modo oscuro */
+    body.dark .btn-primary {
+      background: #1A2535;
+      color: #7EB8F7;
+      border-color: #2A3F55;
+    }
+    body.dark .btn-primary:hover {
+      background: #1E3A5C;
+      color: #BAE6FD;
+      border-color: #3A6A9A;
+    }
+
+    /* Bulk bar en modo oscuro */
+    body.dark .bulk-bar {
+      background: #1A2535;
+      border: 0.5px solid #2A3F55;
+      border-left: 3px solid #3A6A9A;
+    }
+    body.dark .bulk-info { color: #E2E8F0; }
+    body.dark .bulk-info strong { color: #7EB8F7; }
+
+    /* "Cancelar selección" */
+    body.dark .bulk-bar .btn:not(.btn-danger) {
+      background: #0C2A4A;
+      color: #93C5FD;
+      border-color: #1E4A7A;
+    }
+    body.dark .bulk-bar .btn:not(.btn-danger):hover {
+      background: #1E3A5C;
+      color: #BAE6FD;
+      border-color: #3A6A9A;
+    }
+
+    /* "Eliminar seleccionadas" */
+    body.dark .bulk-bar .btn-danger {
+      background: #DC2626;
+      color: #FFFFFF;
+      border-color: #B91C1C;
+    }
+    body.dark .bulk-bar .btn-danger:hover {
+      background: #EF4444;
+      color: #FFFFFF;
+      border-color: #DC2626;
+    }
+
+    /* ── Mejoras de modo oscuro ── */
+
+    /* Tipografía: Newsreader weight 300 se vuelve fantasmal en fondo oscuro */
+    body.dark .stat-value { font-weight: 400; }
+    body.dark .section-title { display: none; }
+    body.dark .section-head { margin-bottom: 8px; }
+
+    /* Labels secundarios: #4A6785 es demasiado oscuro en 11-12px uppercase */
+    body.dark .stat-label { color: #5A84A8; letter-spacing: 0.10em; }
+
+    /* Hover de fila: antes iba a #0D1117 sobre #111827 (más oscuro = roto) */
+    body.dark tbody tr:hover { background: rgba(96,165,250,0.04); }
+
+    /* Bordes en dos niveles: separadores de filas casi invisibles */
+    body.dark tbody tr { border-bottom-color: rgba(255,255,255,0.045); }
+
+    /* Filtro activo: #60A5FA sólido era demasiado agresivo */
+    body.dark .filter-btn.active {
+      background: rgba(96,165,250,0.12);
+      border-color: #3B82F6;
+      color: #93C5FD;
+    }
+    body.dark .filter-btn:hover {
+      background: rgba(96,165,250,0.06);
+      border-color: rgba(96,165,250,0.30);
+      color: #7EB8F7;
+    }
+
+    /* Checkboxes: dorado en oscuro no tiene sentido */
+    body.dark .cb-row { accent-color: #3B82F6; }
+
+    /* Flash de fila nueva: azul en vez de dorado */
+    @keyframes rowInDark {
+      from { opacity: 0; background: rgba(96,165,250,0.09); }
+      to   { opacity: 1; background: transparent; }
+    }
+    body.dark .row-new { animation: rowInDark 1.4s ease forwards; }
+
+    /* ── Distribución espacial — modo oscuro ── */
+
+    /* 1. Filtros rápidos + fechas → una sola fila */
+    body.dark .filter-bar {
+      flex-direction: row;
+      gap: 0;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding-top: 16px;
+    }
+    body.dark .filter-bar-row:nth-child(2) { flex: 1; min-width: 0; }
+    body.dark .filter-bar-row:nth-child(2)::before {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 20px;
+      background: #1E2D3D;
+      margin: 0 20px;
+      flex-shrink: 0;
+      align-self: center;
+    }
+    body.dark #btnExport { margin-left: auto; }
+    body.dark label[for="dateTo"] { margin-left: 12px; }
+    body.dark input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+    }
+
+    /* 2. Stat cards — padding compacto y gap reducido sobre el filtro */
+    body.dark .stats { padding-top: 16px; }
+    body.dark .stat-card { padding: 20px 24px; }
+
+    /* 3. Gap entre stats y sección */
+    body.dark .section { padding-top: 28px; }
+
+    /* 4. Section head — gap reducido */
+    body.dark .section-head { margin-bottom: 16px; }
+
+    /* 5. Filtros de tabla — sin contenedor en oscuro */
+    body.dark #filters {
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      gap: 16px;
+    }
+    body.dark #lastUpdate {
+      margin-left: auto;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-family: var(--mono);
+      white-space: nowrap;
+    }
+
+    /* Botón Exportar Excel — verde brillante */
+    body.dark #btnExport {
+      background: rgba(34,197,94,0.08);
+      color: #22C55E;
+      border-color: #16A34A;
+      box-shadow: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 18px;
+      line-height: 1;
+    }
+    body.dark #btnExport:hover {
+      background: rgba(34,197,94,0.15);
+      color: #4ADE80;
+      border-color: #22C55E;
+    }
+    body.dark #btnExport svg {
+      display: block;
+      flex-shrink: 0;
+    }
+
+    /* Paginación — texto e info en blanco */
+    body.dark .pagination-info {
+      color: #FFFFFF;
+    }
+    body.dark .page-btn:not(.active) {
+      color: #FFFFFF;
+      border-color: #2A3F55;
+      background: transparent;
+    }
+    body.dark #filterBank,
+    body.dark #filterCategory,
+    body.dark #filterProv {
+      background: #0D1117;
+      border-color: #2A3F55;
+      color: #FFFFFF;
+    }
+    body.dark #filterProv::placeholder {
+      color: rgba(255,255,255,0.4);
+    }
+    body.dark #filterBank,
+    body.dark #filterCategory,
+    body.dark .bank-select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: none;
+      padding-right: 12px;
+    }
+
+    /* 6. Botón Limpiar */
+    body.dark #filters .btn {
+      background: #1A2535;
+      color: #7EB8F7;
+      border-color: #2A3F55;
+    }
+    body.dark #filters .btn:hover {
+      background: #1E3A5C;
+      color: #BAE6FD;
     }
 
     html { font-size: 16px; scroll-behavior: smooth; }
@@ -309,7 +610,11 @@
 
     tbody td { padding: 16px 22px; vertical-align: middle; }
 
-    .td-name  { font-weight: 500; color: var(--navy); max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .td-name  { font-weight: 500; color: var(--navy); max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; user-select: none; }
+    .td-name-text { display: block; overflow: hidden; text-overflow: ellipsis; white-space: inherit; }
+    .td-name--expanded { white-space: normal; overflow: visible; text-overflow: unset; cursor: pointer; vertical-align: top; }
+    .td-name--expanded .td-name-text { white-space: normal; overflow: visible; text-overflow: unset; }
+    .td-name--editing { cursor: default; vertical-align: top; }
     .td-folio { font-family: var(--mono); font-size: 12px; color: var(--text-2); }
     .td-date  { font-family: var(--mono); font-size: 13px; color: var(--text-2); white-space: nowrap; }
     .td-amt   {
@@ -397,17 +702,38 @@
       display: inline-block; padding: 3px 10px;
       border-radius: 9999px; font-size: 11px; font-weight: 500;
       text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap;
+      border: 1px solid transparent;
     }
-    .b-alimentacion { background: var(--c-alimentacion-bg); color: var(--c-alimentacion); }
-    .b-transporte   { background: var(--c-transporte-bg);   color: var(--c-transporte);   }
-    .b-oficina      { background: var(--c-oficina-bg);      color: var(--c-oficina);      }
-    .b-servicios    { background: var(--c-servicios-bg);    color: var(--c-servicios);    }
-    .b-tecnologia   { background: var(--c-tecnologia-bg);   color: var(--c-tecnologia);   }
-    .b-salud        { background: var(--c-salud-bg);        color: var(--c-salud);        }
-    .b-otro         { background: var(--c-otro-bg);         color: var(--c-otro);         }
-    .b-iess         { background: var(--c-iess-bg);         color: var(--c-iess);         }
-    .b-sueldos      { background: var(--c-sueldos-bg);      color: var(--c-sueldos);      }
-    .b-adelantos    { background: var(--c-adelantos-bg);    color: var(--c-adelantos);    }
+    /* Badges — modo claro */
+    body:not(.dark) .b-iess         { background: #DBEAFE; color: #1E40AF; border-color: #BFDBFE; }
+    body:not(.dark) .b-sueldos      { background: #FEE2E2; color: #991B1B; border-color: #FECACA; }
+    body:not(.dark) .b-adelantos    { background: #FEF3C7; color: #92400E; border-color: #FDE68A; }
+    body:not(.dark) .b-otro         { background: #F3F4F6; color: #374151; border-color: #D1D5DB; }
+    body:not(.dark) .b-servicios    { background: #EDE9FE; color: #5B21B6; border-color: #C4B5FD; }
+    body:not(.dark) .b-tecnologia   { background: #E0F2FE; color: #0369A1; border-color: #BAE6FD; }
+    body:not(.dark) .b-alimentacion { background: #ECFCCB; color: #365314; border-color: #BEF264; }
+    body:not(.dark) .b-transporte   { background: #E1F3FE; color: #1F6C9F; border-color: #BAE6FD; }
+    body:not(.dark) .b-salud        { background: #EDF3EC; color: #346538; border-color: #A7F3D0; }
+    body:not(.dark) .b-oficina      { background: #FDEBEC; color: #9F2F2D; border-color: #FECACA; }
+    body:not(.dark) .b-sacafranco   { background: #FEE2E2; color: #991B1B; border-color: #FECACA; }
+    body:not(.dark) .b-educativo    { background: #EDE9FE; color: #5B21B6; border-color: #C4B5FD; }
+    /* Badges — modo oscuro */
+    body.dark .b-iess         { background: #1E3A5C !important; color: #93C5FD !important; border-color: #2A5A8A !important; }
+    body.dark .b-viaticos     { background: #064E3B !important; color: #34D399 !important; border-color: #065F46 !important; }
+    body.dark .b-sueldos      { background: #7F1D1D !important; color: #FCA5A5 !important; border-color: #991B1B !important; }
+    body.dark .b-adelantos    { background: #78350F !important; color: #FCD34D !important; border-color: #92400E !important; }
+    body.dark .b-otro         { background: #1F2937 !important; color: #9CA3AF !important; border-color: #374151 !important; }
+    body.dark .b-servicios    { background: #2E1065 !important; color: #C4B5FD !important; border-color: #5B21B6 !important; }
+    body.dark .b-tecnologia   { background: #0C4A6E !important; color: #7DD3FC !important; border-color: #0369A1 !important; }
+    body.dark .b-alimentacion { background: #1A2E05 !important; color: #A3E635 !important; border-color: #365314 !important; }
+    body.dark .b-transporte   { background: #0C2A4A !important; color: #7EB8F7 !important; border-color: #1A4A7A !important; }
+    body.dark .b-salud        { background: #064E3B !important; color: #6EE7B7 !important; border-color: #065F46 !important; }
+    body.dark .b-sacafranco   { background: #7F1D1D !important; color: #FCA5A5 !important; border-color: #991B1B !important; }
+    body.dark .b-educativo    { background: #2E1065 !important; color: #C4B5FD !important; border-color: #5B21B6 !important; }
+    body.dark .b-oficina      { background: #4C0519 !important; color: #FDA4AF !important; border-color: #7F1D1D !important; }
+    /* Fallback para categorías dinámicas sin clase definida */
+    body:not(.dark) .badge-select:not([class*="b-"]) { background: #F3F4F6; color: #374151; border-color: #D1D5DB; }
+    body.dark       .badge-select:not([class*="b-"]) { background: #1F2937 !important; color: #9CA3AF !important; border-color: #374151 !important; }
 
     /* ── Select de banco ── */
     .bank-select {
@@ -641,7 +967,10 @@
       margin-bottom: 16px; flex-wrap: wrap;
     }
     #filterBank, #filterCategory, #filterProv {
-      padding: 7px 12px;
+      padding: 0 28px 0 12px;
+      height: 36px;
+      line-height: normal;
+      vertical-align: middle;
       border: 1px solid var(--border);
       border-radius: 8px;
       font-size: 13px;
@@ -650,7 +979,6 @@
       background: var(--surface);
       transition: border-color 0.15s, box-shadow 0.15s;
       cursor: pointer;
-      min-height: 40px;
     }
     #filterProv { cursor: text; }
     #filterBank:focus, #filterCategory:focus, #filterProv:focus {
@@ -675,7 +1003,7 @@
     /* ── Select de categoría con apariencia de badge (color por categoría) ── */
     .badge-select {
       appearance: none;
-      border: none;
+      border: 1px solid transparent;
       font-size: 11px;
       font-weight: 500;
       padding: 3px 10px;
@@ -687,7 +1015,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
       transition: filter 0.15s;
-      /* El color del badge se aplica inline por categoría en buildRow() */
     }
     .badge-select:hover { filter: brightness(0.97); }
     .badge-select:focus { outline: none; box-shadow: 0 0 0 2px var(--border-soft); }
@@ -838,6 +1165,38 @@
       .wa-status:first-of-type { display: none; }
     }
 
+    /* ── Menú contextual de categorías ── */
+    #ctxMenu {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      background: #111827;
+      border: 0.5px solid #2A3F55;
+      border-radius: 6px;
+      padding: 4px 0;
+      min-width: 180px;
+      font-family: var(--sans);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    body:not(.dark) #ctxMenu {
+      background: #FFFFFF;
+      border-color: #EAEAEA;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+    #ctxDelete {
+      padding: 8px 16px;
+      font-size: 13px;
+      color: #FCA5A5;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.12s;
+    }
+    body:not(.dark) #ctxDelete { color: #991B1B; }
+    #ctxDelete:hover { background: rgba(252,165,165,0.10); }
+    body:not(.dark) #ctxDelete:hover { background: #FEF2F2; }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -875,6 +1234,13 @@
       </div>
 
       <div class="hdr-div"></div>
+
+      <!-- Toggle tema -->
+      <button id="themeToggle" onclick="toggleTheme()" aria-label="Cambiar tema" class="btn" style="width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;">
+        <svg id="themeIcon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+        </svg>
+      </button>
 
       <!-- Botones -->
       <button class="btn btn-primary" onclick="openModal()">
@@ -917,9 +1283,9 @@
       <button class="filter-btn" data-period="all" onclick="setQuickFilter('all', this)">Todo</button>
     </div>
     <div class="filter-bar-row">
-      <label class="filter-label" for="dateFrom">Fecha desde</label>
+      <label class="filter-label" for="dateFrom">Desde</label>
       <input type="date" id="dateFrom" class="date-input" onchange="onDateRangeChange()">
-      <label class="filter-label" for="dateTo">Fecha hasta</label>
+      <label class="filter-label" for="dateTo">Hasta</label>
       <input type="date" id="dateTo" class="date-input" onchange="onDateRangeChange()">
       <button class="btn" onclick="exportExcel()" id="btnExport">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -955,9 +1321,9 @@
   <div class="section">
     <div class="section-head">
       <h2 class="section-title">Facturas recientes</h2>
-      <span class="section-meta" id="lastUpdate">—</span>
     </div>
     <div id="filters">
+      <input id="filterProv" type="search" placeholder="Buscar proveedor" aria-label="Buscar por proveedor">
       <label class="filter-label" for="filterBank">Banco</label>
       <select id="filterBank">
         <option value="">Todos los bancos</option>
@@ -969,8 +1335,8 @@
       <select id="filterCategory">
         <option value="">Todas las categorías</option>
       </select>
-      <input id="filterProv" type="search" placeholder="Buscar proveedor…" aria-label="Buscar por proveedor">
       <button class="btn" onclick="clearFilters()">Limpiar</button>
+      <span class="section-meta" id="lastUpdate">—</span>
     </div>
     <div class="table-wrap" id="tableWrap">
       <div class="skeleton-wrap" aria-label="Cargando facturas…" role="status">
@@ -1041,6 +1407,19 @@
   </div>
 </div>
 
+<!-- Menú contextual de categorías -->
+<div id="ctxMenu" role="menu" aria-label="Opciones de categoría">
+  <div id="ctxDelete" role="menuitem" tabindex="0">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="3 6 5 6 21 6"/>
+      <path d="M19 6l-1 14H6L5 6"/>
+      <path d="M10 11v6M14 11v6"/>
+      <path d="M9 6V4h6v2"/>
+    </svg>
+    <span id="ctxDeleteLabel">Eliminar categoría</span>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -1072,26 +1451,45 @@
   }
 
   /* ─── Categorías: orden y color ─── */
-  const CATEGORY_COLORS = [
-    { bg: '#EEF2FF', text: '#4338CA' }, // índigo
-    { bg: '#F0FDF4', text: '#15803D' }, // verde
-    { bg: '#FFF7ED', text: '#C2410C' }, // naranja
-    { bg: '#FDF4FF', text: '#9333EA' }, // púrpura
-    { bg: '#ECFDF5', text: '#065F46' }, // esmeralda
-    { bg: '#FEF2F2', text: '#B91C1C' }, // rojo
-    { bg: '#EFF6FF', text: '#1D4ED8' }, // azul
-    { bg: '#FEFCE8', text: '#A16207' }, // amarillo
-  ]
+  const KNOWN_BADGE_CLASSES = new Set([
+    'iess','viaticos','sueldos','adelantos','otro',
+    'servicios','tecnologia','alimentacion','transporte',
+    'salud','sacafranco','educativo','oficina'
+  ])
 
   function getCategoryColor(categoryName) {
-    // "Otro" siempre el último color de la paleta, independiente del índice
-    if ((categoryName || '').toLowerCase() === 'otro') {
-      return CATEGORY_COLORS[CATEGORY_COLORS.length - 1]
+    const paletteDark = [
+      { bg: '#1E3A5C', color: '#93C5FD', border: '#2A5A8A' },
+      { bg: '#064E3B', color: '#34D399', border: '#065F46' },
+      { bg: '#7F1D1D', color: '#FCA5A5', border: '#991B1B' },
+      { bg: '#78350F', color: '#FCD34D', border: '#92400E' },
+      { bg: '#2E1065', color: '#C4B5FD', border: '#5B21B6' },
+      { bg: '#0C4A6E', color: '#7DD3FC', border: '#0369A1' },
+      { bg: '#1A2E05', color: '#A3E635', border: '#365314' },
+      { bg: '#4A1942', color: '#F0ABFC', border: '#86198F' },
+      { bg: '#1C1917', color: '#D6D3D1', border: '#57534E' },
+      { bg: '#0F172A', color: '#94A3B8', border: '#334155' },
+    ]
+    const paletteLight = [
+      { bg: '#DBEAFE', color: '#1E40AF', border: '#BFDBFE' },
+      { bg: '#D1FAE5', color: '#065F46', border: '#6EE7B7' },
+      { bg: '#FEE2E2', color: '#991B1B', border: '#FECACA' },
+      { bg: '#FEF3C7', color: '#92400E', border: '#FDE68A' },
+      { bg: '#EDE9FE', color: '#5B21B6', border: '#C4B5FD' },
+      { bg: '#E0F2FE', color: '#0369A1', border: '#BAE6FD' },
+      { bg: '#ECFCCB', color: '#365314', border: '#BEF264' },
+      { bg: '#FDF4FF', color: '#86198F', border: '#F0ABFC' },
+      { bg: '#F5F5F4', color: '#57534E', border: '#D6D3D1' },
+      { bg: '#F1F5F9', color: '#334155', border: '#94A3B8' },
+    ]
+    const key = (categoryName || 'otro').toLowerCase().trim()
+    let hash = 0
+    for (let i = 0; i < key.length; i++) {
+      hash = (hash * 31 + key.charCodeAt(i)) & 0xffffffff
     }
-    const idx = categories.findIndex(
-      c => c.toLowerCase() === (categoryName || '').toLowerCase()
-    )
-    return CATEGORY_COLORS[idx % CATEGORY_COLORS.length] || { bg: '#F3F4F6', text: '#374151' }
+    const idx = Math.abs(hash) % paletteDark.length
+    const isDark = document.body.classList.contains('dark')
+    return isDark ? paletteDark[idx] : paletteLight[idx]
   }
 
   // Orden de categorías: alfabético con "Otro" siempre al final
@@ -1109,10 +1507,24 @@
     return name.toUpperCase()
   }
 
+  function normalizeCat(name) {
+    return (name || 'otro').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || 'otro'
+  }
+
   function applyBadgeColor(el, categoryName) {
-    const col = getCategoryColor(categoryName)
-    el.style.backgroundColor = col.bg
-    el.style.color = col.text
+    const normalized = normalizeCat(categoryName)
+    el.className = el.className.replace(/\bb-\S+/g, '').trim()
+    if (KNOWN_BADGE_CLASSES.has(normalized)) {
+      el.classList.add('b-' + normalized)
+      el.style.backgroundColor = ''
+      el.style.color = ''
+      el.style.borderColor = ''
+    } else {
+      const c = getCategoryColor(categoryName)
+      el.style.backgroundColor = c.bg
+      el.style.color = c.color
+      el.style.borderColor = c.border
+    }
   }
 
   function populateFilterCat() {
@@ -1131,7 +1543,9 @@
       sel.innerHTML =
         sortedCategories().map(c => `<option value="${c}">${esc(formatCategory(c))}</option>`).join('') +
         '<option value="__add__">+ Agregar categoría</option>'
-      sel.value = categories.includes(current) ? current : (categories[0] || 'Otro')
+      const resolved = categories.includes(current) ? current : (categories[0] || 'Otro')
+      sel.value = resolved
+      applyBadgeColor(sel, resolved)
     })
   }
 
@@ -1260,16 +1674,32 @@
   }
 
   function buildRow(e) {
-    const cat = (e.categoria || 'Otro')
+    const cat = e.categoria || null
     const cur = e.moneda || 'USD'
     const banco = e.banco || '—'
+    const catNorm = cat ? normalizeCat(cat) : null
+    const catIsNull = cat === null
+    const catIsDynamic = !catIsNull && !KNOWN_BADGE_CLASSES.has(catNorm)
+    const catClass = (catIsNull || catIsDynamic) ? 'badge-select' : `badge-select b-${catNorm}`
+    const catColor = catIsNull
+      ? (document.body.classList.contains('dark')
+          ? { bg: '#1F2937', color: '#6B7280', border: '#374151' }
+          : { bg: '#F3F4F6', color: '#6B7280', border: '#D1D5DB' })
+      : catIsDynamic ? getCategoryColor(cat) : null
+    const catStyle = catColor
+      ? `style="background-color:${catColor.bg};color:${catColor.color};border-color:${catColor.border}"`
+      : ''
     const tr  = document.createElement('tr')
     tr.dataset.id = e.id
     tr.innerHTML = `
       <td class="td-check"><input type="checkbox" class="cb-row" data-id="${esc(e.id)}" onchange="onRowCheckChange()"></td>
       ${thumbHTML(e)}
-      <td class="td-name td-editable" contenteditable="true"
-          data-id="${esc(e.id)}" data-field="proveedor" title="${esc(e.proveedor || '')}">${esc(e.proveedor || '')}</td>
+      <td class="td-name"
+          data-id="${esc(e.id)}"
+          data-field="proveedor"
+          data-state="collapsed"
+          data-value="${esc(e.proveedor || '')}"
+          title="${esc(e.proveedor || '')}"><span class="td-name-text">${esc(e.proveedor || '—')}</span></td>
       <td class="td-date">${e.fecha || '—'}</td>
       <td class="td-amt">${esc(cur)} ${fmtAmt(e.total)}</td>
       <td>
@@ -1278,16 +1708,17 @@
         </select>
       </td>
       <td>
-        <select class="badge-select" data-id="${esc(e.id)}" data-prev-value="${esc(cat)}" aria-label="Categoría"
-                style="background-color:${getCategoryColor(cat).bg};color:${getCategoryColor(cat).text}">
+        <select class="${catClass}" ${catStyle} data-id="${esc(e.id)}" data-prev-value="${esc(cat || '')}" aria-label="Categoría">
+          ${catIsNull ? '<option value="" selected>Sin categoría</option>' : ''}
           ${sortedCategories().map(c => `<option value="${esc(c)}" ${c === cat ? 'selected' : ''}>${esc(formatCategory(c))}</option>`).join('')}
           <option value="__add__">+ Agregar categoría</option>
         </select>
       </td>
       <td class="td-desc"
           data-id="${esc(e.id)}"
+          data-field="descripcion"
           data-state="collapsed"
-          data-desc="${esc(e.descripcion || '')}"
+          data-value="${esc(e.descripcion || '')}"
           title="${esc(e.descripcion || '')}"><span class="td-desc-text">${esc(e.descripcion || '—')}</span></td>
       <td class="td-del">
         <button class="btn-delete" onclick="deleteExpense('${esc(e.id)}', this)" title="Eliminar factura" aria-label="Eliminar factura">
@@ -1712,16 +2143,34 @@
       return
     }
 
+    if (!catEl.value) return
     catEl.dataset.prevValue = catEl.value
     applyBadgeColor(catEl, catEl.value)
     await patchExpense(catEl.dataset.id, { categoria: catEl.value })
   })
 
-  /* ─── Descripción: 3 estados ─── */
+  /* ─── Nombre y Descripción: inline edit (3 estados compartidos) ─── */
+  function collapseName(td) {
+    td.dataset.state = 'collapsed'
+    td.classList.remove('td-name--expanded', 'td-name--editing')
+    const text = td.dataset.value || ''
+    td.title = text
+    td.innerHTML = `<span class="td-name-text">${esc(text || '—')}</span>`
+  }
+
+  function expandName(td) {
+    td.dataset.state = 'expanded'
+    td.classList.add('td-name--expanded')
+    td.classList.remove('td-name--editing')
+    const text = td.dataset.value || '—'
+    td.title = ''
+    td.innerHTML = `<span class="td-name-text">${esc(text)}</span>`
+  }
+
   function collapseDesc(td) {
     td.dataset.state = 'collapsed'
     td.classList.remove('td-desc--expanded', 'td-desc--editing')
-    const text = td.dataset.desc || ''
+    const text = td.dataset.value || ''
     td.title = text
     td.innerHTML = `<span class="td-desc-text">${esc(text || '—')}</span>`
   }
@@ -1730,16 +2179,23 @@
     td.dataset.state = 'expanded'
     td.classList.add('td-desc--expanded')
     td.classList.remove('td-desc--editing')
-    const text = td.dataset.desc || '—'
+    const text = td.dataset.value || '—'
     td.title = ''
     td.innerHTML = `<span class="td-desc-text">${esc(text)}</span>`
   }
 
-  function editDesc(td) {
+  function activateInlineEdit(td) {
+    const field  = td.dataset.field
+    const isDesc = td.classList.contains('td-desc')
     td.dataset.state = 'editing'
-    td.classList.add('td-desc--editing')
-    td.classList.remove('td-desc--expanded')
-    const original = td.dataset.desc || ''
+    if (isDesc) {
+      td.classList.add('td-desc--editing')
+      td.classList.remove('td-desc--expanded')
+    } else {
+      td.classList.add('td-name--editing')
+      td.classList.remove('td-name--expanded')
+    }
+    const original = td.dataset.value || ''
     const ta = document.createElement('textarea')
     ta.className = 'desc-textarea'
     ta.value = original
@@ -1758,20 +2214,25 @@
     async function commit() {
       if (handled) return
       handled = true
-      const newVal = ta.value.trim()
-      td.dataset.desc = newVal
-      collapseDesc(td)
+      const raw = ta.value
+      const newVal = isDesc
+        ? raw.trim()
+        : raw.replace(/[\r\n]+/g, ' ').trim().replace(/\s+/g, ' ')
+      td.dataset.value = newVal
+      if (isDesc) collapseDesc(td)
+      else collapseName(td)
       if (newVal !== original) {
-        await patchExpense(td.dataset.id, { descripcion: newVal })
+        await patchExpense(td.dataset.id, { [field]: newVal })
         const idx = expenses.findIndex(ex => ex.id === td.dataset.id)
-        if (idx !== -1) expenses[idx].descripcion = newVal
+        if (idx !== -1) expenses[idx][field] = newVal
       }
     }
 
     function cancel() {
       if (handled) return
       handled = true
-      collapseDesc(td)
+      if (isDesc) collapseDesc(td)
+      else collapseName(td)
     }
 
     ta.addEventListener('keydown', (e) => {
@@ -1781,35 +2242,101 @@
     ta.addEventListener('blur', commit)
   }
 
-  let _descTimer = null
+  let _inlineTimer = null
 
   document.addEventListener('click', (ev) => {
     if (ev.target.classList.contains('desc-textarea')) return
-    const td = ev.target.closest('.td-desc')
-    if (!td) {
-      clearTimeout(_descTimer)
+    const tdDesc = ev.target.closest('.td-desc')
+    const tdName = ev.target.closest('.td-name')
+    if (!tdDesc && !tdName) {
+      clearTimeout(_inlineTimer)
       document.querySelectorAll('.td-desc[data-state="expanded"]').forEach(el => collapseDesc(el))
+      document.querySelectorAll('.td-name[data-state="expanded"]').forEach(el => collapseName(el))
       return
     }
+    const td = tdDesc || tdName
     if (td.dataset.state === 'editing') return
-    clearTimeout(_descTimer)
-    _descTimer = setTimeout(() => {
+    clearTimeout(_inlineTimer)
+    _inlineTimer = setTimeout(() => {
       if (td.dataset.state === 'expanded') {
-        collapseDesc(td)
+        td.classList.contains('td-desc') ? collapseDesc(td) : collapseName(td)
       } else {
         document.querySelectorAll('.td-desc[data-state="expanded"]').forEach(el => { if (el !== td) collapseDesc(el) })
-        expandDesc(td)
+        document.querySelectorAll('.td-name[data-state="expanded"]').forEach(el => { if (el !== td) collapseName(el) })
+        td.classList.contains('td-desc') ? expandDesc(td) : expandName(td)
       }
     }, 230)
   })
 
   document.addEventListener('dblclick', (ev) => {
     if (ev.target.classList.contains('desc-textarea')) return
-    const td = ev.target.closest('.td-desc')
+    const td = ev.target.closest('.td-desc') || ev.target.closest('.td-name')
     if (!td) return
-    clearTimeout(_descTimer)
+    clearTimeout(_inlineTimer)
     ev.preventDefault()
-    editDesc(td)
+    activateInlineEdit(td)
+  })
+
+  /* ─── Menú contextual de categorías ─── */
+  let ctxTarget = null
+
+  const PROTECTED_VALUES = new Set(['', 'Otro', '__add__'])
+
+  document.addEventListener('contextmenu', (e) => {
+    const sel = e.target.closest('.badge-select, #filterCategory')
+    if (!sel) { document.getElementById('ctxMenu').style.display = 'none'; return }
+    const val = sel.value
+    if (!val || PROTECTED_VALUES.has(val)) return
+    e.preventDefault()
+    ctxTarget = { selectEl: sel, categoria: val }
+    document.getElementById('ctxDeleteLabel').textContent = `Eliminar "${val}"`
+    const menu = document.getElementById('ctxMenu')
+    menu.style.display = 'block'
+    const menuW = 188, menuH = 40
+    const x = Math.min(e.clientX, window.innerWidth  - menuW - 8)
+    const y = Math.min(e.clientY, window.innerHeight - menuH - 8)
+    menu.style.left = x + 'px'
+    menu.style.top  = y + 'px'
+  })
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#ctxMenu')) {
+      document.getElementById('ctxMenu').style.display = 'none'
+    }
+  })
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') document.getElementById('ctxMenu').style.display = 'none'
+  })
+
+  document.getElementById('ctxDelete').addEventListener('click', async () => {
+    if (!ctxTarget) return
+    const { categoria } = ctxTarget
+    document.getElementById('ctxMenu').style.display = 'none'
+    const ok = await showConfirm(
+      `¿Eliminar "${categoria}"?`,
+      `Los registros con esta categoría quedarán sin categoría asignada.`
+    )
+    ctxTarget = null
+    if (!ok) return
+    try {
+      const res = await fetch(`/api/categories/${encodeURIComponent(categoria)}`, { method: 'DELETE' })
+      const data = await res.json()
+      if (!data.ok) throw new Error('error')
+      expenses = expenses.map(e => e.categoria === categoria ? { ...e, categoria: null } : e)
+      await loadCategories()
+      populateFilterCat()
+      render()
+    } catch {
+      showSimpleToast('Error al eliminar la categoría')
+    }
+  })
+
+  socket.on('category-deleted', async ({ nombre }) => {
+    expenses = expenses.map(e => e.categoria === nombre ? { ...e, categoria: null } : e)
+    await loadCategories()
+    populateFilterCat()
+    render()
   })
 
   /* ─── Helpers ─── */
@@ -1827,6 +2354,36 @@
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
   }
   function cap(s) { return String(s).charAt(0).toUpperCase() + String(s).slice(1) }
+
+  /* ─── Tema oscuro ─── */
+  function updateThemeIcon(isDark) {
+    const icon = document.getElementById('themeIcon')
+    if (isDark) {
+      icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
+      icon.setAttribute('fill', 'none')
+      icon.setAttribute('stroke', 'currentColor')
+      icon.setAttribute('stroke-width', '2')
+    } else {
+      icon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>'
+      icon.setAttribute('fill', 'currentColor')
+      icon.removeAttribute('stroke')
+      icon.removeAttribute('stroke-width')
+    }
+  }
+
+  function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark')
+    localStorage.setItem('theme', isDark ? 'dark' : 'light')
+    updateThemeIcon(isDark)
+    render()
+  }
+
+  ;(function () {
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark')
+      updateThemeIcon(true)
+    }
+  })()
 </script>
 </body>
 </html>

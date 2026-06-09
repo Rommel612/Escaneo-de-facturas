@@ -78,6 +78,21 @@ export function getStatsFrom(expenses) {
   return computeStats(expenses)
 }
 
+export function clearCategoryFromExpenses(categoryName) {
+  const data = load()
+  const key = (categoryName || '').toLowerCase()
+  let affected = 0
+  data.expenses = data.expenses.map(e => {
+    if ((e.categoria || '').toLowerCase() === key) {
+      affected++
+      return { ...e, categoria: null, updatedAt: new Date().toISOString() }
+    }
+    return e
+  })
+  save(data)
+  return affected
+}
+
 export function findByHash(hash) {
   if (!hash) return null
   return load().expenses.find(e => e.hash === hash) || null
