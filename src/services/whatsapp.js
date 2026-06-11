@@ -6,6 +6,8 @@ import pino from 'pino'
 import { EventEmitter } from 'events'
 import { WHATSAPP_PHONE } from '../config.js'
 import { handleInvoice, buildHelpMsg, buildSummaryMsg } from '../handlers/message.js'
+import { extractAttendanceData } from '../gemini-turno.js'
+import { addAttendance } from '../db-attendance.js'
 
 export const waEvents = new EventEmitter()
 
@@ -25,8 +27,9 @@ export function isGroupOrNonIndividual(jid) {
   )
 }
 
-export async function connectToWhatsApp() {
+export async function connectToWhatsApp(onExpense, onStatus, onPairing, onAttendance) {
   pairingRequested = false
+  let onAttendanceCb = onAttendance
 
   const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys')
 
@@ -114,13 +117,27 @@ export async function connectToWhatsApp() {
         console.log('[FAC] quotedMessage keys:', Object.keys(quotedMessage || {}))
 
         if (!quotedMessage) {
+          await new Promise(r => setTimeout(r, 1000 + Math.random() * 2000))
           await sock.sendMessage(from, { text: 'Responde a una foto o PDF con *!fac* para registrarlo como factura.' })
           continue
         }
 
-        const quotedType = Object.keys(quotedMessage)[0]
+        let quotedType = Object.keys(quotedMessage)[0]
         console.log('[FAC] quotedType:', quotedType)
+
+        // documentWithCaptionMessage es un wrapper — extraer el documentMessage interno
+        let resolvedMessage = quotedMessage
+        if (quotedType === 'documentWithCaptionMessage') {
+          const inner = quotedMessage.documentWithCaptionMessage?.message
+          if (inner) {
+            resolvedMessage = inner
+            quotedType = Object.keys(inner)[0]
+            console.log('[FAC] unwrapped documentWithCaptionMessage → quotedType:', quotedType)
+          }
+        }
+
         if (quotedType !== 'imageMessage' && quotedType !== 'documentMessage') {
+          await new Promise(r => setTimeout(r, 1000 + Math.random() * 2000))
           await sock.sendMessage(from, { text: 'El mensaje citado no es una imagen ni un PDF.' })
           continue
         }
@@ -131,13 +148,46 @@ export async function connectToWhatsApp() {
             id: contextInfo.stanzaId,
             participant: contextInfo.participant
           },
-          message: quotedMessage
+          message: resolvedMessage
         }
         console.log('[FAC] calling handleInvoice, stanzaId:', contextInfo.stanzaId)
         await handleInvoice(sock, quotedMsg, from, quotedType, (expense) => waEvents.emit('expense', expense))
+      } else if (text.startsWith('!turno')) {
+        const content = text.replace('!turno', '').trim()
+        if (!content) {
+          await new Promise(r => setTimeout(r, 1000 + Math.random() * 2000))
+          await sock.sendMessage(from, { text: 'Envía *!turno* seguido del mensaje de registro.\nEjemplo: _!turno Entrando a guardia, relevo a Carlos_' })
+          return
+        }
+        try {
+          const data = await extractAttendanceData(content)
+          const now = new Date()
+          const record = addAttendance({
+            empleadoId: null,
+            empleado: data.empleado || 'Sin identificar',
+            tipo: data.tipo || 'entrada',
+            fecha: data.fecha || now.toISOString().split('T')[0],
+            hora: data.hora || now.toTimeString().slice(0, 5),
+            observacion: data.observacion || null,
+            fuente: 'whatsapp',
+            telefono: from.replace('@s.whatsapp.net', '')
+          })
+          await new Promise(r => setTimeout(r, 1000 + Math.random() * 2000))
+          const emoji = record.tipo === 'entrada' ? '✅' : '👋'
+          await sock.sendMessage(from, {
+            text: `${emoji} *Turno registrado*\n\nEmpleado: ${record.empleado}\nTipo: ${record.tipo.charAt(0).toUpperCase() + record.tipo.slice(1)}\nFecha: ${record.fecha}\nHora: ${record.hora}${record.observacion ? '\nNota: ' + record.observacion : ''}\n\nYa aparece en el panel.`
+          })
+          if (onAttendanceCb) onAttendanceCb(record)
+        } catch (err) {
+          console.error('Error procesando turno:', err.message)
+          await new Promise(r => setTimeout(r, 1000 + Math.random() * 2000))
+          await sock.sendMessage(from, { text: '❌ No pude registrar el turno. Intenta de nuevo con más detalle.' })
+        }
       } else if (text.toLowerCase() === '!help') {
+        await new Promise(r => setTimeout(r, 1000 + Math.random() * 2000))
         await sock.sendMessage(from, { text: buildHelpMsg() })
       } else if (text.toLowerCase() === '!res') {
+        await new Promise(r => setTimeout(r, 1000 + Math.random() * 2000))
         await sock.sendMessage(from, { text: buildSummaryMsg() })
       }
     }

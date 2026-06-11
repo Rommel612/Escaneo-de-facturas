@@ -5,6 +5,7 @@ import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { getExpenses, getStats, deleteExpense, updateExpense, clearCategoryFromExpenses } from '../services/storage.js'
 import { WHATSAPP_PHONE } from '../config.js'
+import { getEmployees, addEmployee, deleteEmployee, getAttendance, addAttendance, updateAttendance, deleteAttendance } from '../db-attendance.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const CATEGORIES_PATH = join(__dirname, '..', '..', 'categories.json')
@@ -109,6 +110,49 @@ export function registerRoutes(app, io) {
     const affected = clearCategoryFromExpenses(nombre)
     io.emit('category-deleted', { nombre, affected })
     res.json({ ok: true, affected })
+  })
+
+  // ── Employees ──
+  app.get('/api/employees', (_req, res) => {
+    res.json(getEmployees())
+  })
+
+  app.post('/api/employees', (req, res) => {
+    const { nombre, telefono } = req.body
+    if (!nombre || !telefono) return res.status(400).json({ error: 'nombre y telefono son requeridos' })
+    const emp = addEmployee({ nombre, telefono })
+    res.status(201).json(emp)
+  })
+
+  app.delete('/api/employees/:id', (req, res) => {
+    deleteEmployee(req.params.id)
+    res.json({ ok: true })
+  })
+
+  // ── Attendance ──
+  app.get('/api/attendance', (_req, res) => {
+    res.json(getAttendance())
+  })
+
+  app.post('/api/attendance', (req, res) => {
+    const { empleadoId, empleado, tipo, fecha, hora, observacion } = req.body
+    if (!empleado || !tipo) return res.status(400).json({ error: 'empleado y tipo son requeridos' })
+    const record = addAttendance({ empleadoId: empleadoId || null, empleado, tipo, fecha, hora, observacion: observacion || null, fuente: 'manual' })
+    res.status(201).json(record)
+  })
+
+  app.put('/api/attendance/:id', (req, res) => {
+    try {
+      const updated = updateAttendance(req.params.id, req.body)
+      res.json(updated)
+    } catch (e) {
+      res.status(404).json({ error: e.message })
+    }
+  })
+
+  app.delete('/api/attendance/:id', (req, res) => {
+    deleteAttendance(req.params.id)
+    res.json({ ok: true })
   })
 
   app.get('/api/whatsapp-qr', async (_req, res) => {

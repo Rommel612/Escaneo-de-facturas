@@ -249,13 +249,14 @@
       display: block;
       width: 1px;
       height: 20px;
-      background: #1E2D3D;
+      background: var(--border, #EAEAEA);
       margin: 0 20px;
       flex-shrink: 0;
       align-self: center;
     }
     body.dark #btnExport { margin-left: auto; }
     body.dark label[for="dateTo"] { margin-left: 12px; }
+    body.dark .stat-sub { color: #FFFFFF !important; }
     body.dark input[type="date"]::-webkit-calendar-picker-indicator {
       filter: invert(1);
       cursor: pointer;
@@ -282,7 +283,7 @@
     }
     body.dark #lastUpdate {
       margin-left: auto;
-      color: #FFFFFF;
+      color: #E2E8F0 !important;
       font-size: 11px;
       font-family: var(--mono);
       white-space: nowrap;
@@ -362,24 +363,14 @@
     }
 
     /* ════════════════════════════════════════
-       HEADER — Navy oscuro full-width
+       HEADER — Warm monochrome
     ════════════════════════════════════════ */
     .header-shell {
-      background: var(--navy-dark);
-      border-bottom: 1px solid rgba(201,168,76,0.18);
-      /* Textura sutil: ruido muy suave */
+      background: var(--bg);
+      border-bottom: 1px solid #EAEAEA;
       position: relative;
     }
-    /* Línea decorativa dorada inferior */
-    .header-shell::after {
-      content: '';
-      display: block;
-      position: absolute;
-      bottom: -1px; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--gold-light) 50%, var(--gold) 70%, transparent 100%);
-      opacity: 0.6;
-    }
+    .header-shell::after { display: none; }
 
     .header {
       max-width: 1280px;
@@ -397,49 +388,49 @@
     /* Ícono / marca */
     .logo-mark {
       width: 34px; height: 34px;
-      background: var(--gold-muted);
-      border: 1px solid var(--gold-border);
+      background: #F3F2F0;
+      border: 1px solid #EAEAEA;
       border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
-    .logo-mark svg { fill: var(--gold); }
+    .logo-mark svg { fill: var(--text-1); }
 
     .logo-text {
       font-family: var(--serif);
       font-size: 18px;
       font-weight: 300;
       letter-spacing: -0.02em;
-      color: #FFFFFF;
+      color: var(--text-1);
       line-height: 1;
     }
-    .logo-text span { color: var(--gold-light); }
+    .logo-text span { color: var(--text-2); }
 
     .logo-sep-v {
       width: 1px; height: 18px;
-      background: rgba(255,255,255,0.12);
+      background: #EAEAEA;
     }
 
     .header-sub {
       font-size: 12px;
       font-family: var(--mono);
-      color: rgba(255,255,255,0.58);
+      color: var(--text-2);
       text-transform: uppercase;
       letter-spacing: 0.07em;
     }
 
-    /* Status dots — en header navy */
+    /* Status dots */
     .header-right { display: flex; align-items: center; gap: 14px; }
 
     .wa-status {
       display: flex; align-items: center; gap: 7px;
       font-size: 12px; font-family: var(--mono);
-      color: rgba(255,255,255,0.62);
+      color: var(--text-2);
       text-transform: uppercase; letter-spacing: 0.07em;
     }
     .wa-dot {
       width: 6px; height: 6px; border-radius: 50%;
-      background: rgba(255,255,255,0.2); flex-shrink: 0;
+      background: #D1D5DB; flex-shrink: 0;
       transition: background 0.4s;
     }
     .wa-dot.on  { background: #5FCC7A; animation: blink 2.4s ease-in-out infinite; }
@@ -449,7 +440,7 @@
     /* Divisor vertical entre status y botones */
     .hdr-div {
       width: 1px; height: 20px;
-      background: rgba(255,255,255,0.10);
+      background: #EAEAEA;
     }
 
     /* ── Botones en header ── */
@@ -457,9 +448,9 @@
       display: inline-flex; align-items: center; gap: 7px;
       font-family: var(--sans); font-size: 13px; font-weight: 500;
       padding: 9px 16px; border-radius: 6px;
-      border: 1px solid var(--gold-border);
-      background: var(--gold-muted);
-      color: var(--gold-light);
+      border: 1px solid #EAEAEA;
+      background: #FFFFFF;
+      color: #111111;
       cursor: pointer;
       touch-action: manipulation;
       transition: background 0.15s, border-color 0.15s, transform 0.1s;
@@ -468,21 +459,21 @@
       min-height: 40px;
     }
     .btn:hover {
-      background: rgba(201,168,76,0.22);
-      border-color: rgba(201,168,76,0.50);
+      background: #F7F6F3;
+      border-color: #D4D4D0;
     }
     .btn:active { transform: scale(0.97); }
 
-    /* Botón primario dorado sólido */
+    /* Botón primario — negro sólido */
     .btn-primary {
-      background: var(--gold);
-      border-color: var(--gold);
-      color: var(--navy-dark);
+      background: #111111;
+      border-color: #111111;
+      color: #FFFFFF;
       font-weight: 600;
     }
     .btn-primary:hover {
-      background: var(--gold-light);
-      border-color: var(--gold-light);
+      background: #333333;
+      border-color: #333333;
     }
 
     /* ════════════════════════════════════════
@@ -1204,6 +1195,68 @@
         transition-duration: 0.01ms !important;
       }
     }
+
+    .header-nav { display: flex; align-items: center; gap: 4px; }
+    .nav-item {
+      padding: 6px 14px; border-radius: 5px;
+      font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      cursor: pointer; color: var(--text-2);
+      background: transparent; border: 1px solid transparent;
+      transition: color 0.15s, background 0.15s;
+    }
+    .nav-item.active { color: var(--text-1); background: var(--surface); border-color: var(--border); }
+    .nav-item:not(.active):hover { color: var(--text-1); }
+    body.dark .nav-item.active { background: #1a2535; border-color: #7EB8F7; color: #7EB8F7; }
+
+    /* Attendance page */
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    /* Attendance table */
+    .td-emp-cell { display: flex; align-items: center; gap: 10px; }
+    .avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 500; flex-shrink: 0;
+      background: var(--border); color: var(--text-2);
+    }
+    .badge-tipo {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 9999px; font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .b-entrada { background: #EDF3EC; color: #346538; }
+    .b-salida  { background: #FDEBEC; color: #9F2F2D; }
+    body.dark .b-entrada { background: #0d2010; color: #5B8A5B; }
+    body.dark .b-salida  { background: #201010; color: #C0564A; }
+    .src-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-2); }
+    .src-dot { width: 5px; height: 5px; border-radius: 50%; }
+    .src-wa     { background: #5B8A5B; }
+    .src-manual { background: var(--text-3); }
+
+    /* Attendance modal */
+    .att-modal-backdrop {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); z-index: 100;
+      align-items: center; justify-content: center;
+    }
+    .att-modal-backdrop.open { display: flex; }
+    .att-modal {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 32px; width: 420px; max-width: 90vw;
+    }
+    .att-modal h3 { font-family: var(--serif); font-size: 20px; font-weight: 300; margin-bottom: 20px; }
+    .att-form-row { margin-bottom: 14px; }
+    .att-form-row label { display: block; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-2); margin-bottom: 6px; }
+    .att-form-row input, .att-form-row select, .att-form-row textarea {
+      width: 100%; padding: 9px 12px;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg); color: var(--text-1);
+      font-family: var(--sans); font-size: 13px;
+    }
+    .att-form-row textarea { resize: vertical; min-height: 72px; }
+    .att-modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
   </style>
 </head>
 <body>
@@ -1216,9 +1269,12 @@
       <div class="logo-mark">
         <svg width="16" height="16" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 13h8v1.5H8V13zm0 3h8v1.5H8V16zm0-6h3v1.5H8V10z"/></svg>
       </div>
-      <h1 class="logo-text">Facturas<span> · </span>Panel</h1>
+      <h1 class="logo-text">Gestión<span> · </span>General</h1>
       <div class="logo-sep-v"></div>
-      <span class="header-sub">Control de gastos</span>
+      <nav class="header-nav">
+        <button class="nav-item active" onclick="switchPage('flujos')">Control de flujos</button>
+        <button class="nav-item" onclick="switchPage('asistencia')">Control de asistencia</button>
+      </nav>
     </div>
 
     <div class="header-right">
@@ -1273,6 +1329,8 @@
       <div style="font-size:11px;color:#A8A29E;margin-top:10px;">Válido por 60 s — se renueva automáticamente</div>
     </div>
   </div>
+
+  <div id="page-flujos" class="page-section active">
 
   <!-- Barra de filtros -->
   <div class="filter-bar">
@@ -1347,6 +1405,113 @@
       </div>
     </div>
     <div id="paginationBar"></div>
+  </div>
+
+  </div>
+
+  <div id="page-asistencia" class="page-section">
+
+    <!-- Stats asistencia -->
+    <div class="stats" style="padding-top:36px">
+      <div class="stat-card">
+        <div class="stat-label">Presentes hoy</div>
+        <div class="stat-value" id="att-stat-presentes">—</div>
+        <div class="stat-sub" id="att-stat-total">de — empleados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Registros hoy</div>
+        <div class="stat-value" id="att-stat-registros">—</div>
+        <div class="stat-sub">entradas + salidas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Vía WhatsApp</div>
+        <div class="stat-value" id="att-stat-wa">—</div>
+        <div class="stat-sub">registros automáticos</div>
+      </div>
+    </div>
+
+    <!-- Filters asistencia -->
+    <div class="filters" style="margin-top:32px">
+      <button class="filter-btn active" onclick="attFilter('hoy',this)">Hoy</button>
+      <button class="filter-btn" onclick="attFilter('ayer',this)">Ayer</button>
+      <button class="filter-btn" onclick="attFilter('semana',this)">Esta semana</button>
+      <button class="filter-btn" onclick="attFilter('todo',this)">Todo</button>
+      <span class="filter-sep"></span>
+      <select id="attEmpFilter" onchange="renderAttendance()" style="padding:7px 12px;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--text-1);font-size:12px;">
+        <option value="">Todos los empleados</option>
+      </select>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn" onclick="openAttModal()">+ Registrar turno</button>
+        <button class="btn" onclick="openEmpModal()">+ Empleado</button>
+      </div>
+    </div>
+
+    <!-- Table asistencia -->
+    <div class="section" style="padding-top:24px">
+      <div class="table-wrap" id="attTableWrap">
+        <div class="empty">
+          <div class="empty-icon"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+          <div class="empty-title">Sin registros aún</div>
+          <div class="empty-sub">Envía <strong>!turno</strong> por WhatsApp o registra manualmente.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal: registrar turno -->
+  <div class="att-modal-backdrop" id="attModalBackdrop" onclick="if(event.target===this)closeAttModal()">
+    <div class="att-modal">
+      <h3>Registrar turno</h3>
+      <div class="att-form-row">
+        <label>Empleado</label>
+        <select id="attModalEmp"></select>
+      </div>
+      <div class="att-form-row">
+        <label>Tipo</label>
+        <select id="attModalTipo">
+          <option value="entrada">Entrada</option>
+          <option value="salida">Salida</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="att-form-row">
+          <label>Fecha</label>
+          <input type="date" id="attModalFecha">
+        </div>
+        <div class="att-form-row">
+          <label>Hora</label>
+          <input type="time" id="attModalHora">
+        </div>
+      </div>
+      <div class="att-form-row">
+        <label>Observación</label>
+        <textarea id="attModalObs" placeholder="Opcional..."></textarea>
+      </div>
+      <div class="att-modal-actions">
+        <button class="btn" onclick="closeAttModal()">Cancelar</button>
+        <button class="btn btn-dark" onclick="saveAttRecord()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: nuevo empleado -->
+  <div class="att-modal-backdrop" id="empModalBackdrop" onclick="if(event.target===this)closeEmpModal()">
+    <div class="att-modal">
+      <h3>Nuevo empleado</h3>
+      <div class="att-form-row">
+        <label>Nombre completo</label>
+        <input type="text" id="empModalNombre" placeholder="Ej: Carlos Ramos">
+      </div>
+      <div class="att-form-row">
+        <label>Teléfono WhatsApp</label>
+        <input type="text" id="empModalTel" placeholder="593991234567">
+      </div>
+      <div class="att-modal-actions">
+        <button class="btn" onclick="closeEmpModal()">Cancelar</button>
+        <button class="btn btn-dark" onclick="saveEmployee()">Guardar</button>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -1948,7 +2113,7 @@
     const lastUpdated = list.reduce((latest, e) => {
       const d = e.createdAt || ''
       return d > latest ? d : latest
-    }, null)
+    }, '')
     return { total, count, average, lastUpdated }
   }
 
@@ -2348,7 +2513,10 @@
   }
   function fmtTime(iso) {
     if (!iso) return '—'
-    return new Date(iso).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
+    const d = new Date(iso)
+    const date = d.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    const time = d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
+    return `${date} ${time}`
   }
   function esc(s) {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
@@ -2384,6 +2552,141 @@
       updateThemeIcon(true)
     }
   })()
+
+  // ── Page navigation ──
+  function switchPage(page) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'))
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'))
+    document.getElementById('page-' + page).classList.add('active')
+    event.currentTarget.classList.add('active')
+    if (page === 'asistencia') { loadEmployees(); renderAttendance() }
+  }
+
+  // ── Attendance state ──
+  let attRecords = []
+  let employees  = []
+  let attDateFilter = 'hoy'
+
+  async function loadEmployees() {
+    const r = await fetch('/api/employees')
+    employees = await r.json()
+    const sel1 = document.getElementById('attEmpFilter')
+    const sel2 = document.getElementById('attModalEmp')
+    const opts = employees.map(e => `<option value="${e.id}">${esc(e.nombre)}</option>`).join('')
+    sel1.innerHTML = '<option value="">Todos los empleados</option>' + opts
+    sel2.innerHTML = '<option value="">— Selecciona —</option>' + opts
+  }
+
+  async function loadAttendance() {
+    const r = await fetch('/api/attendance')
+    attRecords = await r.json()
+  }
+
+  function attFilter(f, btn) {
+    attDateFilter = f
+    document.querySelectorAll('#page-asistencia .filter-btn').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+    renderAttendance()
+  }
+
+  async function renderAttendance() {
+    await loadAttendance()
+    const today = new Date().toISOString().split('T')[0]
+    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
+    const weekAgo   = new Date(Date.now() - 7*86400000).toISOString().split('T')[0]
+    const empFilter = document.getElementById('attEmpFilter')?.value || ''
+
+    let filtered = attRecords.filter(r => {
+      if (attDateFilter === 'hoy')    return r.fecha === today
+      if (attDateFilter === 'ayer')   return r.fecha === yesterday
+      if (attDateFilter === 'semana') return r.fecha >= weekAgo
+      return true
+    })
+    if (empFilter) filtered = filtered.filter(r => r.empleadoId === empFilter)
+
+    // Stats
+    const todayRecs = attRecords.filter(r => r.fecha === today)
+    const presentes = new Set(todayRecs.filter(r => r.tipo === 'entrada').map(r => r.empleado)).size
+    document.getElementById('att-stat-presentes').textContent = presentes
+    document.getElementById('att-stat-total').textContent = `de ${employees.length} empleados`
+    document.getElementById('att-stat-registros').textContent = todayRecs.length
+    document.getElementById('att-stat-wa').textContent = todayRecs.filter(r => r.fuente === 'whatsapp').length
+
+    const wrap = document.getElementById('attTableWrap')
+    if (filtered.length === 0) {
+      wrap.innerHTML = `<div class="empty"><div class="empty-icon"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="empty-title">Sin registros</div><div class="empty-sub">Cambia el filtro o registra un turno.</div></div>`
+      return
+    }
+
+    const rows = filtered.slice().reverse().map(r => {
+      const initials = (r.empleado || '?').split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase()
+      return `<tr>
+        <td><div class="td-emp-cell">
+          <div class="avatar">${initials}</div>
+          <div><div style="font-weight:500">${esc(r.empleado || '—')}</div>
+          ${r.telefono ? `<div style="font-size:11px;color:var(--text-2);font-family:var(--mono)">${esc(r.telefono)}</div>` : ''}
+          </div>
+        </div></td>
+        <td><span class="badge-tipo b-${r.tipo}">${cap(r.tipo)}</span></td>
+        <td class="td-date">${r.fecha || '—'}</td>
+        <td class="td-date">${r.hora || '—'}</td>
+        <td class="td-desc" title="${esc(r.observacion || '')}">${esc(r.observacion || '—')}</td>
+        <td><div class="src-badge"><div class="src-dot ${r.fuente === 'whatsapp' ? 'src-wa' : 'src-manual'}"></div>${r.fuente === 'whatsapp' ? 'WhatsApp' : 'Manual'}</div></td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn" style="padding:5px 10px;font-size:11px" onclick="deleteAttRecord('${r.id}')">Eliminar</button>
+        </div></td>
+      </tr>`
+    }).join('')
+
+    wrap.innerHTML = `<table><thead><tr>
+      <th>Empleado</th><th>Tipo</th><th>Fecha</th><th>Hora</th>
+      <th>Observación</th><th>Fuente</th><th></th>
+    </tr></thead><tbody>${rows}</tbody></table>`
+  }
+
+  // ── Attendance modal ──
+  function openAttModal() {
+    const now = new Date()
+    document.getElementById('attModalFecha').value = now.toISOString().split('T')[0]
+    document.getElementById('attModalHora').value  = now.toTimeString().slice(0,5)
+    document.getElementById('attModalBackdrop').classList.add('open')
+  }
+  function closeAttModal() { document.getElementById('attModalBackdrop').classList.remove('open') }
+
+  async function saveAttRecord() {
+    const empleadoId = document.getElementById('attModalEmp').value
+    const emp = employees.find(e => e.id === empleadoId)
+    const body = {
+      empleadoId: empleadoId || null,
+      empleado:   emp ? emp.nombre : 'Sin asignar',
+      tipo:       document.getElementById('attModalTipo').value,
+      fecha:      document.getElementById('attModalFecha').value,
+      hora:       document.getElementById('attModalHora').value,
+      observacion: document.getElementById('attModalObs').value || null
+    }
+    await fetch('/api/attendance', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) })
+    closeAttModal()
+    renderAttendance()
+  }
+
+  async function deleteAttRecord(id) {
+    if (!confirm('¿Eliminar este registro?')) return
+    await fetch('/api/attendance/' + id, { method: 'DELETE' })
+    renderAttendance()
+  }
+
+  // ── Employee modal ──
+  function openEmpModal() { document.getElementById('empModalBackdrop').classList.add('open') }
+  function closeEmpModal() { document.getElementById('empModalBackdrop').classList.remove('open') }
+
+  async function saveEmployee() {
+    const nombre = document.getElementById('empModalNombre').value.trim()
+    const telefono = document.getElementById('empModalTel').value.trim()
+    if (!nombre || !telefono) return alert('Nombre y teléfono son requeridos')
+    await fetch('/api/employees', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ nombre, telefono }) })
+    closeEmpModal()
+    loadEmployees()
+  }
 </script>
 </body>
 </html>
